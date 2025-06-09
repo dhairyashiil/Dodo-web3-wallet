@@ -159,7 +159,7 @@ export default function ReceivePage() {
 
                 <div>
                   <label className="block text-gray-700 mb-2">
-                    Public Key of Recipient's Account
+                    Public Key of Recipient&apos;s Account
                   </label>
                   <input
                     type="text"

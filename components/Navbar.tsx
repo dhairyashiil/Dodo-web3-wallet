@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { HoveredLink, Menu, MenuItem, ProductItem } from "./ui/navbar-menu";
 import { cn } from "@/lib/utils";
 import { HoverBorderGradientDemo } from "./HoverBorderGradientButton";
-import { AnimatedModalDemo } from "./AnimatedModal";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";

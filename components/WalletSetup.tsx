@@ -250,7 +250,7 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
           <div className="text-center mb-6">
             <h2 className={modalTitleClasses}>Confirm Your Recovery Phrase</h2>
             <p className={modalSubtitleClasses}>
-              Enter your 12-word recovery phrase to confirm you've saved it
+              Enter your 12-word recovery phrase to confirm you&apos;ve saved it
             </p>
           </div>
 
