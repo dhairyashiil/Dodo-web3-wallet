@@ -4,7 +4,7 @@ import { DraggableCardDemo } from "./DraggableCard";
 
 export default function Collectibles() {
   return (
-    <div className="my-10 p-10 rounded-lg" style={{ backgroundColor: "" }}>
+    <div className="mt-2 rounded-lg" style={{ backgroundColor: "" }}>
       <DraggableCardDemo />
     </div>
   );
