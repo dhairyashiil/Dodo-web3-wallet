@@ -57,14 +57,20 @@ const WalletGenerator = () => {
 
   const pathTypeName = pathTypeNames[pathTypes[0]] || "";
 
+  // In WalletGenerator.tsx, modify the useEffect:
   useEffect(() => {
     const storedWallets = localStorage.getItem("wallets");
     const storedMnemonic = localStorage.getItem("mnemonics");
+    
     const storedPathTypes = localStorage.getItem("paths");
-
+    
+    console.log("storedWallets: " + storedWallets);
+    console.log("storedMnemonic: " + storedMnemonic);
+    console.log("storedPathTypes: " + storedPathTypes);
+    
     if (storedWallets && storedMnemonic && storedPathTypes) {
-      setMnemonicWords(JSON.parse(storedMnemonic));
       setWallets(JSON.parse(storedWallets));
+      setMnemonicWords(JSON.parse(storedMnemonic));
       setPathTypes(JSON.parse(storedPathTypes));
       setVisiblePrivateKeys(JSON.parse(storedWallets).map(() => false));
       setVisiblePhrases(JSON.parse(storedWallets).map(() => false));
@@ -171,6 +177,7 @@ const WalletGenerator = () => {
       mnemonic,
       wallets.length
     );
+
     if (wallet) {
       const updatedWallets = [...wallets, wallet];
       setWallets(updatedWallets);
@@ -194,9 +201,11 @@ const WalletGenerator = () => {
       mnemonicWords.join(" "),
       wallets.length
     );
+    
     if (wallet) {
       const updatedWallets = [...wallets, wallet];
-      const updatedPathType = [pathTypes, pathTypes];
+      // const updatedPathType = [pathTypes, pathTypes];
+      const updatedPathType = [...pathTypes, pathTypes[0]];
       setWallets(updatedWallets);
       localStorage.setItem("wallets", JSON.stringify(updatedWallets));
       localStorage.setItem("pathTypes", JSON.stringify(updatedPathType));
@@ -208,7 +217,8 @@ const WalletGenerator = () => {
   return (
     <div className="flex flex-col gap-4">
       {/* {mnemonicWords && wallets.length > 0 && ( */}
-      {wallets.length === 0 && mnemonicWords && (
+      {/* {wallets.length === 0 && mnemonicWords && ( */}
+      {/* {mnemonicWords.length > 0 && (
         <motion.div
           className="flex flex-col gap-4"
           initial={{ opacity: 0, y: -20 }}
@@ -296,7 +306,7 @@ const WalletGenerator = () => {
             )}
           </div>
         </motion.div>
-      )}
+      )} */}
 
       {/* Display Secret Phrase */}
       {/* {mnemonicWords && wallets.length > 0 && ( */}

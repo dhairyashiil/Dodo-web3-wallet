@@ -9,8 +9,20 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { IconFeatherFilled } from "@tabler/icons-react";
-import { generateMnemonic, validateMnemonic } from "bip39";
+import { generateMnemonic, mnemonicToSeedSync, validateMnemonic } from "bip39";
+import { Keypair } from "@solana/web3.js";
+import { derivePath } from "ed25519-hd-key";
+import { ethers } from "ethers";
 import { toast } from "sonner";
+import nacl from "tweetnacl";
+import bs58 from "bs58";
+
+interface Wallet {
+  publicKey: string;
+  privateKey: string;
+  mnemonic: string;
+  path: string;
+}
 
 interface WalletSetupProps {
   onCreateWallet: (seedPhrase: string) => void;
@@ -33,6 +45,8 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
   const [confirmPhrase, setConfirmPhrase] = useState("");
   const [showSeed, setShowSeed] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [pathTypes, setPathTypes] = useState<string[]>([]);
+  const [wallets, setWallets] = useState<Wallet[]>([]);
 
   const generateSeedPhrase = () => {
     try {
@@ -47,9 +61,11 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
 
   const handleCreateWallet = () => {
     if (confirmPhrase === seedPhrase) {
-      localStorage.setItem("mnemonics", JSON.stringify(seedPhrase.split(" "))); // Sync format
+      const seedPhraseArray = seedPhrase.split(" ");
+      localStorage.setItem("mnemonics", JSON.stringify(seedPhraseArray));
       localStorage.setItem("paths", JSON.stringify(["501"])); // Default to Solana
-      onCreateWallet(seedPhrase);
+      // onCreateWallet(seedPhrase);
+      handleGenerateWallet(seedPhrase);
       toast.success("Confirmed!");
       window.location.href = "/home";
     } else {
@@ -62,14 +78,13 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
 
     if (validateMnemonic(trimmedPhrase)) {
       // Store the imported mnemonic in localStorage (same format as create)
-      localStorage.setItem(
-        "mnemonics",
-        JSON.stringify(trimmedPhrase.split(" "))
-      );
+      const seedPhraseArray = trimmedPhrase.split(" ");
+      localStorage.setItem("mnemonics", JSON.stringify(seedPhraseArray));
       localStorage.setItem("paths", JSON.stringify(["501"])); // Default to Solana
 
       // Call parent handler
       onImportWallet(trimmedPhrase);
+      handleGenerateWallet(trimmedPhrase);
 
       toast.success("Wallet imported successfully!");
       window.location.href = "/home";
@@ -90,6 +105,67 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
   };
+
+  const generateWalletFromMnemonic = (
+    pathType: string,
+    mnemonic: string,
+    accountIndex: number
+  ): Wallet | null => {
+    try {
+      const seedBuffer = mnemonicToSeedSync(mnemonic);
+      const path = `m/44'/${pathType}'/0'/${accountIndex}'`;
+      const { key: derivedSeed } = derivePath(path, seedBuffer.toString("hex"));
+
+      let publicKeyEncoded: string;
+      let privateKeyEncoded: string;
+
+      if (pathType === "501") {
+        // Solana
+        const { secretKey } = nacl.sign.keyPair.fromSeed(derivedSeed);
+        const keypair = Keypair.fromSecretKey(secretKey);
+
+        privateKeyEncoded = bs58.encode(secretKey);
+        publicKeyEncoded = keypair.publicKey.toBase58();
+      } else if (pathType === "60") {
+        // Ethereum
+        const privateKey = Buffer.from(derivedSeed).toString("hex");
+        privateKeyEncoded = privateKey;
+
+        const wallet = new ethers.Wallet(privateKey);
+        publicKeyEncoded = wallet.address;
+      } else {
+        toast.success("Unsupported path type.");
+        return null;
+      }
+
+      return {
+        publicKey: publicKeyEncoded,
+        privateKey: privateKeyEncoded,
+        mnemonic,
+        path,
+      };
+    } catch (error) {
+      toast.success("Failed to generate wallet. Please try again.");
+      return null;
+    }
+  };
+
+  const handleGenerateWallet = (seedPhrase: string) => {
+  const wallet = generateWalletFromMnemonic("501", seedPhrase, 0);
+
+  if (wallet) {
+    // Get existing wallets or initialize empty array
+    const existingWallets = JSON.parse(localStorage.getItem("wallets") || "[]");
+    
+    // Add new wallet to array
+    existingWallets.push(wallet);
+    
+    // Save back to localStorage
+    localStorage.setItem("wallets", JSON.stringify(existingWallets));
+    
+    toast.success("Wallet generated successfully!");
+  }
+};
 
   // Standard modal container classes
   const modalContainerClasses =

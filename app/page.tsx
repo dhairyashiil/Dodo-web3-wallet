@@ -17,6 +17,7 @@ function App() {
     getActiveAccount,
   } = useWallet();
 
+  /*
   // Check if wallet exists on app load
   useEffect(() => {
     const stored = localStorage.getItem("wallet_encrypted");
@@ -33,6 +34,7 @@ function App() {
       }
     }
   }, []);
+  */
 
   // const renderActiveComponent = () => {
   //   switch (activeTab) {
