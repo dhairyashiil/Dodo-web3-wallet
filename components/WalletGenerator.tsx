@@ -31,6 +31,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
+import { TextRevealCardPreview } from "./TextRevealCard";
 
 interface Wallet {
   publicKey: string;
@@ -67,16 +68,10 @@ const WalletGenerator = () => {
 
   const pathTypeName = pathTypeNames[pathTypes[0]] || "";
 
-  // In WalletGenerator.tsx, modify the useEffect:
   useEffect(() => {
     const storedWallets = localStorage.getItem("wallets");
     const storedMnemonic = localStorage.getItem("mnemonics");
-
     const storedPathTypes = localStorage.getItem("paths");
-
-    console.log("storedWallets: " + storedWallets);
-    console.log("storedMnemonic: " + storedMnemonic);
-    console.log("storedPathTypes: " + storedPathTypes);
 
     if (storedWallets && storedMnemonic && storedPathTypes) {
       setWallets(JSON.parse(storedWallets));
@@ -84,6 +79,8 @@ const WalletGenerator = () => {
       setPathTypes(JSON.parse(storedPathTypes));
       setVisiblePrivateKeys(JSON.parse(storedWallets).map(() => false));
       setVisiblePhrases(JSON.parse(storedWallets).map(() => false));
+    } else {
+      window.location.href = "/";
     }
   }, []);
 
@@ -208,100 +205,7 @@ const WalletGenerator = () => {
   };
   return (
     <div className="flex flex-col gap-4">
-      {/* {mnemonicWords && wallets.length > 0 && ( */}
-      {/* {wallets.length === 0 && mnemonicWords && ( */}
-      {/* {mnemonicWords.length > 0 && (
-        <motion.div
-          className="flex flex-col gap-4"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.3,
-            ease: "easeInOut",
-          }}
-        >
-          <div className="flex flex-col gap-4">
-            {pathTypes.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.3,
-                  ease: "easeInOut",
-                }}
-                className="flex gap-4 flex-col my-12"
-              >
-                <div className="flex flex-col gap-2">
-                  <h1 className="tracking-tight text-xl md:text-3xl font-black">
-                    Dodo - Your Web3 Wallet : )
-                  </h1>
-                  <p className="text-primary/80 font-semibold text-lg md:text-xl">
-                    Choose a blockchain to get started.
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    size={"lg"}
-                    onClick={() => {
-                      setPathTypes(["501"]);
-                      toast.success(
-                        "Wallet selected. Please generate a wallet to continue."
-                      );
-                    }}
-                  >
-                    Solana
-                  </Button>
-                  <Button
-                    size={"lg"}
-                    onClick={() => {
-                      setPathTypes(["60"]);
-                      toast.success(
-                        "Wallet selected. Please generate a wallet to continue."
-                      );
-                    }}
-                  >
-                    Ethereum
-                  </Button>
-                </div>
-              </motion.div>
-            )}
-            {pathTypes.length !== 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.3,
-                  ease: "easeInOut",
-                }}
-                className="flex flex-col gap-4 my-12"
-              >
-                <div className="flex flex-col gap-2">
-                  <h1 className="tracking-tight text-4xl md:text-5xl font-black">
-                    Secret Recovery Phrase
-                  </h1>
-                  <p className="text-primary/80 font-semibold text-lg md:text-xl">
-                    Save these words in a safe place.
-                  </p>
-                </div>
-                <div className="flex flex-col md:flex-row gap-4">
-                  <Input
-                    type="password"
-                    placeholder="Enter your secret phrase (or leave blank to generate)"
-                    onChange={(e) => setMnemonicInput(e.target.value)}
-                    value={mnemonicInput}
-                  />
-                  <Button size={"lg"} onClick={() => handleGenerateWallet()}>
-                    {mnemonicInput ? "Add Wallet" : "Generate Wallet"}
-                  </Button>
-                </div>
-              </motion.div>
-            )}
-          </div>
-        </motion.div>
-      )} */}
-
       {/* Display Secret Phrase */}
-      {/* {mnemonicWords && wallets.length > 0 && ( */}
       {mnemonicWords && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -342,26 +246,9 @@ const WalletGenerator = () => {
               className="flex flex-col w-full items-center justify-center"
               onClick={() => copyToClipboard(mnemonicWords.join(" "))}
             >
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.5,
-                  ease: "easeInOut",
-                }}
-                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 justify-center w-full items-center mx-auto my-8"
-              >
-                {mnemonicWords.map((word, index) => (
-                  <div
-                    key={index}
-                    className="border border-gray-700 md:text-lg bg-foreground/5 hover:bg-foreground/10 transition-all duration-300 rounded-lg p-4"
-                  >
-                    <span className="text-gray-500">{index + 1}.</span>
-                    <span className="text-black font-medium"> {word}</span>
-                  </div>
-                ))}
-              </motion.div>
-              <div className="text-sm md:text-base text-primary/50 flex w-full gap-2 items-center group-hover:text-primary/80 transition-all duration-300">
+              <TextRevealCardPreview />
+
+              <div className="text-sm md:text-base text-primary/50 flex w-full gap-2 items-center group-hover:text-primary/80 transition-all duration-300 mt-3">
                 <Copy className="size-4" /> Copy
               </div>
             </motion.div>
@@ -383,7 +270,7 @@ const WalletGenerator = () => {
         >
           <div className="flex md:flex-row flex-col justify-between w-full gap-4 md:items-center">
             <h2 className="tracking-tight text-3xl md:text-4xl font-extrabold">
-              Wallet
+              Dodo Wallet
             </h2>
             <div className="flex gap-2">
               {wallets.length > 1 && (
@@ -397,11 +284,6 @@ const WalletGenerator = () => {
               )}
               <Button onClick={() => handleAddWallet()}>Add Account</Button>
               <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  {/* <Button variant="destructive" className="self-end">
-                    Clear Wallets
-                  </Button> */}
-                </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>
@@ -541,32 +423,6 @@ const WalletGenerator = () => {
                       </p>
                     </div>
                   </div>
-                  {/* <div className="flex flex-col w-full gap-2">
-                    <span className="text-lg md:text-xl font-bold tracking-tight">
-                      Secret Phrase
-                    </span>
-                    <div className="flex justify-between w-full items-center gap-2">
-                      <p
-                        onClick={() => copyToClipboard(wallet.mnemonic)}
-                        className="text-primary/80 font-medium cursor-pointer hover:text-primary transition-all duration-300 truncate"
-                      >
-                        {visiblePhrases[index]
-                          ? wallet.mnemonic
-                          : "•".repeat(wallet.mnemonic.length)}
-                      </p>
-
-                      <Button
-                        variant="ghost"
-                        onClick={() => togglePhraseVisibility(index)}
-                      >
-                        {visiblePhrases[index] ? (
-                          <EyeOff className="size-4" />
-                        ) : (
-                          <Eye className="size-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </div> */}
                 </div>
               </motion.div>
             ))}

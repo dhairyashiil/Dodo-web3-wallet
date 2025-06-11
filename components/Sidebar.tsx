@@ -39,22 +39,22 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
       ),
       active: pathname === "/home/airdrop",
     },
-    {
-      label: "Send",
-      href: "/home/send",
-      icon: (
-        <IconArrowNarrowUp className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-      active: pathname === "/home/send",
-    },
-    {
-      label: "Swap",
-      href: "/home/swap",
-      icon: (
-        <IconArrowsExchange className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-      active: pathname === "/home/swap",
-    },
+    // {
+    //   label: "Send",
+    //   href: "/home/send",
+    //   icon: (
+    //     <IconArrowNarrowUp className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+    //   ),
+    //   active: pathname === "/home/send",
+    // },
+    // {
+    //   label: "Swap",
+    //   href: "/home/swap",
+    //   icon: (
+    //     <IconArrowsExchange className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+    //   ),
+    //   active: pathname === "/home/swap",
+    // },
     {
       label: "Accounts",
       href: "/home/accounts",
@@ -63,22 +63,22 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
       ),
       active: pathname === "/home/accounts",
     },
-    {
-      label: "Settings",
-      href: "/home/settings",
-      icon: (
-        <IconSettings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-      active: pathname === "/home/settings",
-    },
-    {
-      label: "Logout",
-      href: "/home/logout",
-      icon: (
-        <IconArrowLeft className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-      active: pathname === "/home/logout",
-    },
+    // {
+    //   label: "Settings",
+    //   href: "/home/settings",
+    //   icon: (
+    //     <IconSettings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+    //   ),
+    //   active: pathname === "/home/settings",
+    // },
+    // {
+    //   label: "Logout",
+    //   href: "/home/logout",
+    //   icon: (
+    //     <IconArrowLeft className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+    //   ),
+    //   active: pathname === "/home/logout",
+    // },
   ];
 
   return (
@@ -165,13 +165,3 @@ export const LogoIcon = () => {
   );
 };
 
-// Dummy dashboard component with content
-const Dashboard = () => {
-  return (
-    <div className="flex flex-1">
-      <div className="flex h-full w-full flex-1 flex-col gap-2 rounded-tl-2xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
-        <WalletGenerator />
-      </div>
-    </div>
-  );
-};
