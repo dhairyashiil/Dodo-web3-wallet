@@ -4,12 +4,6 @@ import { useState } from "react";
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { toast } from "sonner";
 
-// {
-//     name: "Alchemy",
-//     url: "https://solana-devnet.g.alchemy.com/v2/", // API Key: jfdJi0c1ziLLMc2lRF_gu5p_ByMqeY_U
-//     requiresKey: true
-//   },
-
 const RPC_PROVIDERS = [
   {
     name: "Quicknode",
@@ -17,20 +11,25 @@ const RPC_PROVIDERS = [
     requiresKey: true,
   },
   {
-    name: "Helius",
-    url: "https://devnet.helius-rpc.com/?api-key=",
-    requiresKey: true,
-  },
-  {
-    name: "Infura",
-    url: "https://solana-devnet.infura.io/v3/",
-    requiresKey: true,
-  },
-  {
     name: "Solana Public RPC",
     url: "https://api.devnet.solana.com",
     requiresKey: false,
   },
+  // {
+  //     name: "Alchemy",
+  //     url: "https://solana-devnet.g.alchemy.com/v2/", // API Key: jfdJi0c1ziLLMc2lRF_gu5p_ByMqeY_U
+  //     requiresKey: true
+  //   },
+  // {
+  //   name: "Helius",
+  //   url: "https://devnet.helius-rpc.com/?api-key=",
+  //   requiresKey: true,
+  // },
+  // {
+  //   name: "Infura",
+  //   url: "https://solana-devnet.infura.io/v3/",
+  //   requiresKey: true,
+  // },
 ];
 
 export default function AirdropPage() {
@@ -38,7 +37,7 @@ export default function AirdropPage() {
   const [publicKey, setPublicKey] = useState("");
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState(RPC_PROVIDERS[3]); // Default to Solana Public RPC
+  const [selectedProvider, setSelectedProvider] = useState(RPC_PROVIDERS[1]); // Default to Solana Public RPC
   const [apiKey, setApiKey] = useState("");
 
   const getConnectionUrl = () => {
@@ -113,7 +112,7 @@ export default function AirdropPage() {
                 <div>
                   <label className="block text-gray-700 mb-2">
                     RPC Provider
-                  </label> 
+                  </label>
                   <select
                     value={selectedProvider.name}
                     onChange={(e) => {
