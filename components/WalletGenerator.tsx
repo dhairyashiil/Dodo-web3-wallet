@@ -39,12 +39,22 @@ interface Wallet {
   path: string;
 }
 
+interface CombinedWallet {
+  mnemonic: string;
+  solanaPublicKey: string;
+  solanaPrivateKey: string;
+  solanaPath: string;
+  ethereumPublicKey: string;
+  ethereumPrivateKey: string;
+  ethereumPath: string;
+}
+
 const WalletGenerator = () => {
   const [mnemonicWords, setMnemonicWords] = useState<string[]>(
     Array(12).fill(" ")
   );
   const [pathTypes, setPathTypes] = useState<string[]>([]);
-  const [wallets, setWallets] = useState<Wallet[]>([]);
+  const [wallets, setWallets] = useState<CombinedWallet[]>([]);
   const [showMnemonic, setShowMnemonic] = useState<boolean>(false);
   const [mnemonicInput, setMnemonicInput] = useState<string>("");
   const [visiblePrivateKeys, setVisiblePrivateKeys] = useState<boolean[]>([]);
@@ -61,13 +71,13 @@ const WalletGenerator = () => {
   useEffect(() => {
     const storedWallets = localStorage.getItem("wallets");
     const storedMnemonic = localStorage.getItem("mnemonics");
-    
+
     const storedPathTypes = localStorage.getItem("paths");
-    
+
     console.log("storedWallets: " + storedWallets);
     console.log("storedMnemonic: " + storedMnemonic);
     console.log("storedPathTypes: " + storedPathTypes);
-    
+
     if (storedWallets && storedMnemonic && storedPathTypes) {
       setWallets(JSON.parse(storedWallets));
       setMnemonicWords(JSON.parse(storedMnemonic));
@@ -157,53 +167,35 @@ const WalletGenerator = () => {
     }
   };
 
-  const handleGenerateWallet = () => {
-    let mnemonic = mnemonicInput.trim();
-
-    if (mnemonic) {
-      if (!validateMnemonic(mnemonic)) {
-        toast.success("Invalid recovery phrase. Please try again.");
-        return;
-      }
-    } else {
-      mnemonic = generateMnemonic();
-    }
-
-    const words = mnemonic.split(" ");
-    setMnemonicWords(words);
-
-    const wallet = generateWalletFromMnemonic(
-      pathTypes[0],
-      mnemonic,
-      wallets.length
-    );
-
-    if (wallet) {
-      const updatedWallets = [...wallets, wallet];
-      setWallets(updatedWallets);
-      localStorage.setItem("wallets", JSON.stringify(updatedWallets));
-      localStorage.setItem("mnemonics", JSON.stringify(words));
-      localStorage.setItem("paths", JSON.stringify(pathTypes));
-      setVisiblePrivateKeys([...visiblePrivateKeys, false]);
-      setVisiblePhrases([...visiblePhrases, false]);
-      toast.success("Wallet generated successfully!");
-    }
-  };
-
   const handleAddWallet = () => {
     if (!mnemonicWords) {
       toast.success("No mnemonic found. Please generate a wallet first.");
       return;
     }
 
-    const wallet = generateWalletFromMnemonic(
-      pathTypes[0],
+    const solanaWallet = generateWalletFromMnemonic(
+      "501",
       mnemonicWords.join(" "),
       wallets.length
     );
-    
-    if (wallet) {
-      const updatedWallets = [...wallets, wallet];
+    const ethereumWallet = generateWalletFromMnemonic(
+      "60",
+      mnemonicWords.join(" "),
+      wallets.length
+    );
+
+    if (solanaWallet && ethereumWallet) {
+      const combinedWallet = {
+        mnemonic: solanaWallet.mnemonic,
+        solanaPublicKey: solanaWallet.publicKey,
+        solanaPrivateKey: solanaWallet.privateKey,
+        solanaPath: solanaWallet.path,
+        ethereumPublicKey: ethereumWallet.publicKey,
+        ethereumPrivateKey: ethereumWallet.privateKey,
+        ethereumPath: ethereumWallet.path,
+      };
+
+      const updatedWallets = [...wallets, combinedWallet];
       // const updatedPathType = [pathTypes, pathTypes];
       const updatedPathType = [...pathTypes, pathTypes[0]];
       setWallets(updatedWallets);
@@ -391,7 +383,7 @@ const WalletGenerator = () => {
         >
           <div className="flex md:flex-row flex-col justify-between w-full gap-4 md:items-center">
             <h2 className="tracking-tight text-3xl md:text-4xl font-extrabold">
-              {pathTypeName} Wallet
+              Wallet
             </h2>
             <div className="flex gap-2">
               {wallets.length > 1 && (
@@ -403,7 +395,7 @@ const WalletGenerator = () => {
                   {gridView ? <Grid2X2 /> : <List />}
                 </Button>
               )}
-              <Button onClick={() => handleAddWallet()}>Add Wallet</Button>
+              <Button onClick={() => handleAddWallet()}>Add Account</Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   {/* <Button variant="destructive" className="self-end">
@@ -451,7 +443,7 @@ const WalletGenerator = () => {
               >
                 <div className="flex justify-between px-8 py-6">
                   <h3 className="font-bold text-2xl md:text-3xl tracking-tight ">
-                    Wallet {index + 1}
+                    Account {index + 1}
                   </h3>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -485,28 +477,40 @@ const WalletGenerator = () => {
                   </AlertDialog>
                 </div>
                 <div className="flex flex-col gap-8 px-8 py-4 rounded-2xl bg-secondary/50">
-                  <div
-                    className="flex flex-col w-full gap-2"
-                    onClick={() => copyToClipboard(wallet.publicKey)}
-                  >
-                    <span className="text-lg md:text-xl font-bold tracking-tight">
-                      Public Key
-                    </span>
-                    <p className="text-primary/80 font-medium cursor-pointer hover:text-primary transition-all duration-300 truncate">
-                      {wallet.publicKey}
-                    </p>
+                  <div className="flex flex-col w-full gap-2">
+                    <div
+                      onClick={() => copyToClipboard(wallet.solanaPublicKey)}
+                    >
+                      <span className="text-lg md:text-xl font-bold tracking-tight">
+                        Solana Public Key
+                      </span>
+                      <p className="text-primary/80 font-medium cursor-pointer hover:text-primary transition-all duration-300 truncate">
+                        {wallet.solanaPublicKey}
+                      </p>
+                    </div>
+                    <div
+                      className="mt-3"
+                      onClick={() => copyToClipboard(wallet.ethereumPublicKey)}
+                    >
+                      <span className="text-lg md:text-xl font-bold tracking-tight">
+                        Ethereum Public Key
+                      </span>
+                      <p className="text-primary/80 font-medium cursor-pointer hover:text-primary transition-all duration-300 truncate">
+                        {wallet.ethereumPublicKey}
+                      </p>
+                    </div>
                   </div>
                   <div className="flex flex-col w-full gap-2">
                     <span className="text-lg md:text-xl font-bold tracking-tight">
-                      Private Key
+                      Solana Private Key
                     </span>
                     <div className="flex justify-between w-full items-center gap-2">
                       <p
-                        onClick={() => copyToClipboard(wallet.privateKey)}
+                        onClick={() => copyToClipboard(wallet.solanaPrivateKey)}
                         className="text-primary/80 font-medium cursor-pointer hover:text-primary transition-all duration-300 truncate"
                       >
                         {visiblePrivateKeys[index]
-                          ? wallet.privateKey
+                          ? wallet.solanaPrivateKey
                           : "•".repeat(wallet.mnemonic.length)}
                       </p>
                       <Button
@@ -519,6 +523,22 @@ const WalletGenerator = () => {
                           <Eye className="size-4" />
                         )}
                       </Button>
+                    </div>
+
+                    <span className="text-lg md:text-xl font-bold tracking-tight">
+                      Ethereum Private Key
+                    </span>
+                    <div className="flex justify-between w-full items-center gap-2">
+                      <p
+                        onClick={() =>
+                          copyToClipboard(wallet.ethereumPrivateKey)
+                        }
+                        className="text-primary/80 font-medium cursor-pointer hover:text-primary transition-all duration-300 truncate"
+                      >
+                        {visiblePrivateKeys[index]
+                          ? wallet.ethereumPrivateKey
+                          : "•".repeat(wallet.mnemonic.length)}
+                      </p>
                     </div>
                   </div>
                   {/* <div className="flex flex-col w-full gap-2">

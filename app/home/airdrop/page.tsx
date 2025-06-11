@@ -33,7 +33,7 @@ const RPC_PROVIDERS = [
   },
 ];
 
-export default function ReceivePage() {
+export default function AirdropPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [publicKey, setPublicKey] = useState("");
   const [amount, setAmount] = useState("");

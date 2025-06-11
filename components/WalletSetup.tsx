@@ -18,9 +18,9 @@ import nacl from "tweetnacl";
 import bs58 from "bs58";
 
 interface Wallet {
+  mnemonic: string;
   publicKey: string;
   privateKey: string;
-  mnemonic: string;
   path: string;
 }
 
@@ -137,7 +137,6 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
         toast.success("Unsupported path type.");
         return null;
       }
-
       return {
         publicKey: publicKeyEncoded,
         privateKey: privateKeyEncoded,
@@ -151,21 +150,35 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
   };
 
   const handleGenerateWallet = (seedPhrase: string) => {
-  const wallet = generateWalletFromMnemonic("501", seedPhrase, 0);
+    const solanaWallet = generateWalletFromMnemonic("501", seedPhrase, 0);
+    const ethereumWallet = generateWalletFromMnemonic("60", seedPhrase, 0);
 
-  if (wallet) {
-    // Get existing wallets or initialize empty array
-    const existingWallets = JSON.parse(localStorage.getItem("wallets") || "[]");
-    
-    // Add new wallet to array
-    existingWallets.push(wallet);
-    
-    // Save back to localStorage
-    localStorage.setItem("wallets", JSON.stringify(existingWallets));
-    
-    toast.success("Wallet generated successfully!");
-  }
-};
+    if (solanaWallet && ethereumWallet) {
+      const combinedWallet = {
+        mnemonic: solanaWallet.mnemonic,
+        solanaPublicKey: solanaWallet.publicKey,
+        solanaPrivateKey: solanaWallet.privateKey,
+        solanaPath: solanaWallet.path,
+        ethereumPublicKey: ethereumWallet.publicKey,
+        ethereumPrivateKey: ethereumWallet.privateKey,
+        ethereumPath: ethereumWallet.path,
+      };
+
+      // Get existing wallets or initialize empty array
+      const existingWallets = JSON.parse(
+        localStorage.getItem("wallets") || "[]"
+      );
+
+      // Add new wallet to array
+      // localStorage.setItem('combinedWallet', JSON.stringify(combinedWallet));
+      existingWallets.push(combinedWallet);
+
+      // Save back to localStorage
+      localStorage.setItem("wallets", JSON.stringify(existingWallets));
+
+      toast.success("Wallet generated successfully!");
+    }
+  };
 
   // Standard modal container classes
   const modalContainerClasses =
