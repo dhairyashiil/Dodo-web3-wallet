@@ -17,6 +17,16 @@ function App() {
     getActiveAccount,
   } = useWallet();
 
+  useEffect(() => {
+    const storedWallets = localStorage.getItem("wallets");
+    const storedMnemonic = localStorage.getItem("mnemonics");
+    const storedPathTypes = localStorage.getItem("paths");
+
+    if (storedWallets && storedMnemonic && storedPathTypes) {
+      window.location.href = "/home";
+    }
+  }, []);
+
   /*
   // Check if wallet exists on app load
   useEffect(() => {

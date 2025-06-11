@@ -9,6 +9,7 @@ import {
   IconArrowsExchange,
   IconBrandTabler,
   IconFeatherFilled,
+  IconRestore,
   IconSettings,
   IconUser,
 } from "@tabler/icons-react";
@@ -71,14 +72,14 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
     //   ),
     //   active: pathname === "/home/settings",
     // },
-    // {
-    //   label: "Logout",
-    //   href: "/home/logout",
-    //   icon: (
-    //     <IconArrowLeft className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-    //   ),
-    //   active: pathname === "/home/logout",
-    // },
+    {
+      label: "Reset",
+      href: "/home/reset",
+      icon: (
+        <IconRestore className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+      active: pathname === "/home/reset",
+    },
   ];
 
   return (
