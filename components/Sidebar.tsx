@@ -139,7 +139,7 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
 export const Logo = () => {
   return (
     <a
-      href="#"
+      href="/home"
       className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
     >
       <IconFeatherFilled className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
