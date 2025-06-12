@@ -1,9 +1,9 @@
-import WalletGenerator from "@/components/WalletGenerator";
+import WalletGenerator from '@/components/WalletGenerator'
 
 export default function AccountsPage() {
   return (
     <div>
-      <WalletGenerator/>
+      <WalletGenerator />
     </div>
   )
 }

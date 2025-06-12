@@ -1,23 +1,23 @@
-"use client";
-import React, { useEffect, useState } from "react";
+'use client'
+import React, { useEffect, useState } from 'react'
 import {
   TextRevealCard,
   TextRevealCardDescription,
   TextRevealCardTitle,
-} from "./ui/text-reveal-card";
+} from './ui/text-reveal-card'
 
 export function TextRevealCardPreview() {
-  const [mnemonicWords, setMnemonicWords] = useState<string>("");
+  const [mnemonicWords, setMnemonicWords] = useState<string>('')
 
   useEffect(() => {
-    const storedMnemonic = localStorage.getItem("mnemonics");
+    const storedMnemonic = localStorage.getItem('mnemonics')
 
     if (storedMnemonic) {
-      const mnemonicArray = JSON.parse(storedMnemonic);
-      const mnemonicString = mnemonicArray.join(" ");
-      setMnemonicWords(mnemonicString);
+      const mnemonicArray = JSON.parse(storedMnemonic)
+      const mnemonicString = mnemonicArray.join(' ')
+      setMnemonicWords(mnemonicString)
     }
-  }, []);
+  }, [])
 
   return (
     // <div className="flex items-center justify-center bg-[#0E0E10] h-[10rem] rounded-xl w-full">
@@ -36,5 +36,5 @@ export function TextRevealCardPreview() {
       </TextRevealCard>
       {/* </div> */}
     </>
-  );
+  )
 }

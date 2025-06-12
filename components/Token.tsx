@@ -1,13 +1,12 @@
-import { ExpandableCardDemo } from "./ExpandableCards";
+import { ExpandableCardDemo } from './ExpandableCards'
 
 export default function Token() {
   return (
-    <div className="my-10 p-10 rounded-lg">
+    <div className="my-10 rounded-lg p-10">
       <ExpandableCardDemo />
     </div>
-  );
+  )
 }
-
 
 // import {
 //   IconCurrencyBitcoin,
@@ -93,4 +92,3 @@ export default function Token() {
 //     </div>
 //   );
 // }
-

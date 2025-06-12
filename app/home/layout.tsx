@@ -1,15 +1,18 @@
-import { SidebarDemo } from "@/components/Sidebar";
+import DeviceDetector from '@/components/DeviceDetector'
+import { SidebarDemo } from '@/components/Sidebar'
 
 export default function HomeLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
       <body>
-        <SidebarDemo>{children}</SidebarDemo>
+        <DeviceDetector>
+          <SidebarDemo>{children}</SidebarDemo>
+        </DeviceDetector>
       </body>
     </html>
-  );
+  )
 }

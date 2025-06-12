@@ -1,86 +1,77 @@
-import React, { useState } from "react";
-import {
-  Plus,
-  Download,
-  Key,
-  Eye,
-  Copy,
-  CheckCircle,
-  ArrowRight,
-} from "lucide-react";
-import { IconFeatherFilled } from "@tabler/icons-react";
-import { generateMnemonic, mnemonicToSeedSync, validateMnemonic } from "bip39";
-import { Keypair } from "@solana/web3.js";
-import { derivePath } from "ed25519-hd-key";
-import { ethers } from "ethers";
-import { toast } from "sonner";
-import nacl from "tweetnacl";
-import bs58 from "bs58";
+import React, { useState } from 'react'
+import { Plus, Download, Key, Eye, Copy, CheckCircle, ArrowRight } from 'lucide-react'
+import { IconFeatherFilled } from '@tabler/icons-react'
+import { generateMnemonic, mnemonicToSeedSync, validateMnemonic } from 'bip39'
+import { Keypair } from '@solana/web3.js'
+import { derivePath } from 'ed25519-hd-key'
+import { ethers } from 'ethers'
+import { toast } from 'sonner'
+import nacl from 'tweetnacl'
+import bs58 from 'bs58'
 
 interface Wallet {
-  mnemonic: string;
-  publicKey: string;
-  privateKey: string;
-  path: string;
+  mnemonic: string
+  publicKey: string
+  privateKey: string
+  path: string
 }
 
-const WalletSetup = ({
-}) => {
-  const [step, setStep] = useState<
-    "welcome" | "create" | "import" | "private-key" | "confirm"
-  >("welcome");
-  const [seedPhrase, setSeedPhrase] = useState<string>("");
-  const [importPhrase, setImportPhrase] = useState("");
-  const [confirmPhrase, setConfirmPhrase] = useState("");
-  const [showSeed, setShowSeed] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
+const WalletSetup = ({}) => {
+  const [step, setStep] = useState<'welcome' | 'create' | 'import' | 'private-key' | 'confirm'>(
+    'welcome'
+  )
+  const [seedPhrase, setSeedPhrase] = useState<string>('')
+  const [importPhrase, setImportPhrase] = useState('')
+  const [confirmPhrase, setConfirmPhrase] = useState('')
+  const [showSeed, setShowSeed] = useState(false)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
 
   const generateSeedPhrase = () => {
     try {
       // Generate a 12-word mnemonic using BIP39 standard
-      const mnemonic = generateMnemonic(128); // 128 bits for 12 words
-      setSeedPhrase(mnemonic);
-      setStep("create");
+      const mnemonic = generateMnemonic(128) // 128 bits for 12 words
+      setSeedPhrase(mnemonic)
+      setStep('create')
     } catch (error) {
-      toast.success("Failed to generate seed phrase. Please try again.");
+      toast.success('Failed to generate seed phrase. Please try again.')
     }
-  };
+  }
 
   const handleCreateWallet = () => {
     if (confirmPhrase === seedPhrase) {
-      const seedPhraseArray = seedPhrase.split(" ");
-      localStorage.setItem("mnemonics", JSON.stringify(seedPhraseArray));
+      const seedPhraseArray = seedPhrase.split(' ')
+      localStorage.setItem('mnemonics', JSON.stringify(seedPhraseArray))
       // localStorage.setItem("paths", JSON.stringify(["501"])); // Default to Solana
       // onCreateWallet(seedPhrase);
-      handleGenerateWallet(seedPhrase);
-      toast.success("Confirmed!");
-      window.location.href = "/home";
+      handleGenerateWallet(seedPhrase)
+      toast.success('Confirmed!')
+      window.location.href = '/home'
     } else {
-      toast.success("Recovery phrases don't match. Please try again.");
+      toast.success("Recovery phrases don't match. Please try again.")
     }
-  };
+  }
 
   const handleImportWallet = () => {
-    const trimmedPhrase = importPhrase.trim();
+    const trimmedPhrase = importPhrase.trim()
 
     if (validateMnemonic(trimmedPhrase)) {
-      const seedPhraseArray = trimmedPhrase.split(" ");
-      localStorage.setItem("mnemonics", JSON.stringify(seedPhraseArray));
-      // localStorage.setItem("paths", JSON.stringify(["501"])); 
+      const seedPhraseArray = trimmedPhrase.split(' ')
+      localStorage.setItem('mnemonics', JSON.stringify(seedPhraseArray))
+      // localStorage.setItem("paths", JSON.stringify(["501"]));
 
-      handleGenerateWallet(trimmedPhrase);
+      handleGenerateWallet(trimmedPhrase)
 
-      toast.success("Wallet imported successfully!");
-      window.location.href = "/home";
+      toast.success('Wallet imported successfully!')
+      window.location.href = '/home'
     } else {
-      toast.success("Invalid recovery phrase. Please check and try again.");
+      toast.success('Invalid recovery phrase. Please check and try again.')
     }
-  };
+  }
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard!");
-  };
+    navigator.clipboard.writeText(text)
+    toast.success('Copied to clipboard!')
+  }
 
   const generateWalletFromMnemonic = (
     pathType: string,
@@ -88,46 +79,46 @@ const WalletSetup = ({
     accountIndex: number
   ): Wallet | null => {
     try {
-      const seedBuffer = mnemonicToSeedSync(mnemonic);
-      const path = `m/44'/${pathType}'/0'/${accountIndex}'`;
-      const { key: derivedSeed } = derivePath(path, seedBuffer.toString("hex"));
+      const seedBuffer = mnemonicToSeedSync(mnemonic)
+      const path = `m/44'/${pathType}'/0'/${accountIndex}'`
+      const { key: derivedSeed } = derivePath(path, seedBuffer.toString('hex'))
 
-      let publicKeyEncoded: string;
-      let privateKeyEncoded: string;
+      let publicKeyEncoded: string
+      let privateKeyEncoded: string
 
-      if (pathType === "501") {
+      if (pathType === '501') {
         // Solana
-        const { secretKey } = nacl.sign.keyPair.fromSeed(derivedSeed);
-        const keypair = Keypair.fromSecretKey(secretKey);
+        const { secretKey } = nacl.sign.keyPair.fromSeed(derivedSeed)
+        const keypair = Keypair.fromSecretKey(secretKey)
 
-        privateKeyEncoded = bs58.encode(secretKey);
-        publicKeyEncoded = keypair.publicKey.toBase58();
-      } else if (pathType === "60") {
+        privateKeyEncoded = bs58.encode(secretKey)
+        publicKeyEncoded = keypair.publicKey.toBase58()
+      } else if (pathType === '60') {
         // Ethereum
-        const privateKey = Buffer.from(derivedSeed).toString("hex");
-        privateKeyEncoded = privateKey;
+        const privateKey = Buffer.from(derivedSeed).toString('hex')
+        privateKeyEncoded = privateKey
 
-        const wallet = new ethers.Wallet(privateKey);
-        publicKeyEncoded = wallet.address;
+        const wallet = new ethers.Wallet(privateKey)
+        publicKeyEncoded = wallet.address
       } else {
-        toast.success("Unsupported path type.");
-        return null;
+        toast.success('Unsupported path type.')
+        return null
       }
       return {
         publicKey: publicKeyEncoded,
         privateKey: privateKeyEncoded,
         mnemonic,
         path,
-      };
+      }
     } catch (error) {
-      toast.success("Failed to generate wallet. Please try again.");
-      return null;
+      toast.success('Failed to generate wallet. Please try again.')
+      return null
     }
-  };
+  }
 
   const handleGenerateWallet = (seedPhrase: string) => {
-    const solanaWallet = generateWalletFromMnemonic("501", seedPhrase, 0);
-    const ethereumWallet = generateWalletFromMnemonic("60", seedPhrase, 0);
+    const solanaWallet = generateWalletFromMnemonic('501', seedPhrase, 0)
+    const ethereumWallet = generateWalletFromMnemonic('60', seedPhrase, 0)
 
     if (solanaWallet && ethereumWallet) {
       const combinedWallet = {
@@ -138,45 +129,42 @@ const WalletSetup = ({
         ethereumPublicKey: ethereumWallet.publicKey,
         ethereumPrivateKey: ethereumWallet.privateKey,
         ethereumPath: ethereumWallet.path,
-      };
+      }
 
       // Get existing wallets or initialize empty array
-      const existingWallets = JSON.parse(
-        localStorage.getItem("wallets") || "[]"
-      );
+      const existingWallets = JSON.parse(localStorage.getItem('wallets') || '[]')
 
-      existingWallets.push(combinedWallet);
-      localStorage.setItem("wallets", JSON.stringify(existingWallets));
-      toast.success("Wallet generated successfully!");
+      existingWallets.push(combinedWallet)
+      localStorage.setItem('wallets', JSON.stringify(existingWallets))
+      toast.success('Wallet generated successfully!')
     }
-  };
+  }
 
   // Standard modal container classes
-  const modalContainerClasses =
-    "w-full max-w-md border border-gray-700/50 rounded-2xl p-8 bg-white";
-  const modalTitleClasses = "text-2xl font-bold text-black mb-4";
-  const modalSubtitleClasses = "text-gray-700 mb-6";
-  const buttonContainerClasses = "flex space-x-4 mt-6";
+  const modalContainerClasses = 'w-full max-w-md border border-gray-700/50 rounded-2xl p-8 bg-white'
+  const modalTitleClasses = 'text-2xl font-bold text-black mb-4'
+  const modalSubtitleClasses = 'text-gray-700 mb-6'
+  const buttonContainerClasses = 'flex space-x-4 mt-6'
   const primaryButtonClasses =
-    "flex-1 bg-orange-400 border border-gray-900 text-white py-3 rounded-xl font-medium hover:bg-gray-900 transition-opacity flex items-center justify-center space-x-2";
+    'flex-1 bg-orange-400 border border-gray-900 text-white py-3 rounded-xl font-medium hover:bg-gray-900 transition-opacity flex items-center justify-center space-x-2'
   const secondaryButtonClasses =
-    "flex-1 bg-gray-200 border border-gray-300 text-black py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors";
+    'flex-1 bg-gray-200 border border-gray-300 text-black py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors'
 
-  if (step === "welcome") {
+  if (step === 'welcome') {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-300 to-violet-950"
+        className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-300 to-violet-950 p-4"
         // style={{ backgroundColor: "#001a2c" }}
       >
         <div className={modalContainerClasses}>
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center">
+          <div className="mb-8 text-center">
+            <div className="mb-6 flex items-center justify-center gap-2">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl">
                 <IconFeatherFilled className="h-16 w-16 text-neutral-800" />
               </div>
               <h1 className="text-5xl font-bold text-black">Dodo</h1>
             </div>
-            <p className="text-gray-700 mb-8">
+            <p className="mb-8 text-gray-700">
               To get started, create a new wallet or import an existing one.
             </p>
           </div>
@@ -184,17 +172,17 @@ const WalletSetup = ({
           <div className="space-y-4">
             <button
               onClick={generateSeedPhrase}
-              className="w-full bg-orange-400 border border-gray-900 text-white py-4 rounded-xl font-medium hover:bg-gray-900 transition-opacity flex items-center justify-center space-x-2"
+              className="flex w-full items-center justify-center space-x-2 rounded-xl border border-gray-900 bg-orange-400 py-4 font-medium text-white transition-opacity hover:bg-gray-900"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="h-5 w-5" />
               <span>Create New Wallet</span>
             </button>
 
             <button
-              onClick={() => setStep("import")}
-              className="w-full bg-orange-400 border border-gray-900 text-white py-4 rounded-xl font-medium hover:bg-gray-900 transition-colors flex items-center justify-center space-x-2"
+              onClick={() => setStep('import')}
+              className="flex w-full items-center justify-center space-x-2 rounded-xl border border-gray-900 bg-orange-400 py-4 font-medium text-white transition-colors hover:bg-gray-900"
             >
-              <Download className="w-5 h-5" />
+              <Download className="h-5 w-5" />
               <span>Import Existing Wallet</span>
             </button>
 
@@ -208,35 +196,32 @@ const WalletSetup = ({
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  if (step === "create") {
+  if (step === 'create') {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-300 to-violet-950"
+        className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-300 to-violet-950 p-4"
         // style={{ backgroundColor: "#001a2c" }}
       >
         <div className={modalContainerClasses}>
-          <div className="text-center mb-6">
+          <div className="mb-6 text-center">
             <h2 className={modalTitleClasses}>Recovery Phrase</h2>
-            <p className={modalSubtitleClasses} style={{ color: "#F97316" }}>
-              This phrase is the ONLY way to recover your wallet. Do NOT share
-              it with anyone!
+            <p className={modalSubtitleClasses} style={{ color: '#F97316' }}>
+              This phrase is the ONLY way to recover your wallet. Do NOT share it with anyone!
             </p>
           </div>
 
           <div className="relative mb-6">
-            <div
-              className={`grid grid-cols-3 gap-3 ${!showSeed ? "blur-sm" : ""}`}
-            >
-              {seedPhrase.split(" ").map((word, index) => (
+            <div className={`grid grid-cols-3 gap-3 ${!showSeed ? 'blur-sm' : ''}`}>
+              {seedPhrase.split(' ').map((word, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-1 rounded-lg p-3 border border-gray-800 text-center bg-gray-100"
+                  className="flex items-center gap-1 rounded-lg border border-gray-800 bg-gray-100 p-3 text-center"
                 >
-                  <span className="text-gray-500 text-xs">{index + 1}.</span>
-                  <span className="text-black font-medium">{word}</span>
+                  <span className="text-xs text-gray-500">{index + 1}.</span>
+                  <span className="font-medium text-black">{word}</span>
                 </div>
               ))}
             </div>
@@ -245,9 +230,9 @@ const WalletSetup = ({
               <div className="absolute inset-0 flex items-center justify-center">
                 <button
                   onClick={() => setShowSeed(true)}
-                  className="bg-orange-400 border border-gray-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-900 transition-opacity flex items-center space-x-2"
+                  className="flex items-center space-x-2 rounded-xl border border-gray-900 bg-orange-400 px-6 py-3 font-medium text-white transition-opacity hover:bg-gray-900"
                 >
-                  <Eye className="w-5 h-5" />
+                  <Eye className="h-5 w-5" />
                   <span>Click to reveal</span>
                 </button>
               </div>
@@ -255,59 +240,56 @@ const WalletSetup = ({
           </div>
 
           {showSeed && (
-            <div className="flex justify-center mb-6">
+            <div className="mb-6 flex justify-center">
               <button
                 onClick={() => copyToClipboard(seedPhrase)}
-                className="bg-gray-200 border border-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors flex items-center space-x-2"
+                className="flex items-center space-x-2 rounded-lg border border-gray-300 bg-gray-200 px-4 py-2 text-black transition-colors hover:bg-gray-300"
               >
-                <Copy className="w-4 h-4" />
+                <Copy className="h-4 w-4" />
                 <span>Copy to Clipboard</span>
               </button>
             </div>
           )}
 
-          <div className="flex items-center space-x-3 mb-6">
+          <div className="mb-6 flex items-center space-x-3">
             <input
               type="checkbox"
               id="terms"
               checked={agreedToTerms}
               onChange={(e) => setAgreedToTerms(e.target.checked)}
-              className="w-4 h-4 text-orange-500 bg-gray-200 border-gray-300 rounded focus:ring-orange-500"
+              className="h-4 w-4 rounded border-gray-300 bg-gray-200 text-orange-500 focus:ring-orange-500"
             />
-            <label htmlFor="terms" className="text-gray-700 text-sm">
+            <label htmlFor="terms" className="text-sm text-gray-700">
               I saved my Recovery Phrase
             </label>
           </div>
 
           <div className={buttonContainerClasses}>
-            <button
-              onClick={() => setStep("welcome")}
-              className={secondaryButtonClasses}
-            >
+            <button onClick={() => setStep('welcome')} className={secondaryButtonClasses}>
               Back
             </button>
             <button
-              onClick={() => setStep("confirm")}
+              onClick={() => setStep('confirm')}
               disabled={!agreedToTerms || !showSeed}
-              className={`${primaryButtonClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`${primaryButtonClasses} disabled:cursor-not-allowed disabled:opacity-50`}
             >
               <span>Continue</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  if (step === "confirm") {
+  if (step === 'confirm') {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-300 to-violet-950"
+        className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-300 to-violet-950 p-4"
         // style={{ backgroundColor: "#001a2c" }}
       >
         <div className={modalContainerClasses}>
-          <div className="text-center mb-6">
+          <div className="mb-6 text-center">
             <h2 className={modalTitleClasses}>Confirm Your Recovery Phrase</h2>
             <p className={modalSubtitleClasses}>
               Enter your 12-word recovery phrase to confirm you&apos;ve saved it
@@ -320,43 +302,38 @@ const WalletSetup = ({
               onChange={(e) => setConfirmPhrase(e.target.value)}
               placeholder="Enter your 12-word recovery phrase..."
               rows={4}
-              className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+              className="w-full resize-none rounded-xl border border-gray-300 bg-gray-100 px-4 py-3 text-black placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
 
           <div className={buttonContainerClasses}>
-            <button
-              onClick={() => setStep("create")}
-              className={secondaryButtonClasses}
-            >
+            <button onClick={() => setStep('create')} className={secondaryButtonClasses}>
               Back
             </button>
             <button
               onClick={handleCreateWallet}
               // disabled={!validateMnemonic(confirmPhrase) || confirmPhrase !== seedPhrase}
-              className={`${primaryButtonClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`${primaryButtonClasses} disabled:cursor-not-allowed disabled:opacity-50`}
             >
-              <CheckCircle className="w-4 h-4" />
+              <CheckCircle className="h-4 w-4" />
               <span>Create Wallet</span>
             </button>
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  if (step === "import") {
+  if (step === 'import') {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-300 to-violet-950"
+        className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-300 to-violet-950 p-4"
         // style={{ backgroundColor: "#001a2c" }}
       >
         <div className={modalContainerClasses}>
-          <div className="text-center mb-6">
+          <div className="mb-6 text-center">
             <h2 className={modalTitleClasses}>Import Wallet</h2>
-            <p className={modalSubtitleClasses}>
-              Enter your 12 word recovery phrase
-            </p>
+            <p className={modalSubtitleClasses}>Enter your 12 word recovery phrase</p>
           </div>
 
           <div className="mb-6">
@@ -365,31 +342,28 @@ const WalletSetup = ({
               onChange={(e) => setImportPhrase(e.target.value)}
               placeholder="Enter your recovery phrase..."
               rows={4}
-              className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+              className="w-full resize-none rounded-xl border border-gray-300 bg-gray-100 px-4 py-3 text-black placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
-            <p className="text-gray-500 text-xs mt-2">
+            <p className="mt-2 text-xs text-gray-500">
               Separate each word with a space. Supports 12 or 24-word phrases.
             </p>
           </div>
 
           <div className={buttonContainerClasses}>
-            <button
-              onClick={() => setStep("welcome")}
-              className={secondaryButtonClasses}
-            >
+            <button onClick={() => setStep('welcome')} className={secondaryButtonClasses}>
               Back
             </button>
             <button
               onClick={handleImportWallet}
               disabled={!validateMnemonic(importPhrase.trim())}
-              className={`${primaryButtonClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`${primaryButtonClasses} disabled:cursor-not-allowed disabled:opacity-50`}
             >
               Import Wallet
             </button>
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // if (step === "private-key") {
@@ -454,7 +428,7 @@ const WalletSetup = ({
   //   );
   // }
 
-  return null;
-};
+  return null
+}
 
-export default WalletSetup;
+export default WalletSetup

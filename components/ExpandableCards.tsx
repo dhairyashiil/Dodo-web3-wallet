@@ -1,156 +1,154 @@
-"use client";
+'use client'
 
-import React, { useEffect, useId, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { useOutsideClick } from "@/hooks/use-outside-click";
-import { toast } from "sonner";
-import { Wallet } from "@/app/home/send/page";
+import React, { useEffect, useId, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useOutsideClick } from '@/hooks/use-outside-click'
+import { toast } from 'sonner'
+import { Wallet } from '@/app/home/send/page'
 
 export function ExpandableCardDemo() {
-  const [wallets, setWallets] = useState<Wallet[]>([]);
-  const [active, setActive] = useState<(typeof cards)[number] | boolean | null>(
-    null
-  );
-  const [selectedPublicKey, setSelectedPublicKey] = useState<string>("");
-  const [balance, setBalance] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const ref = useRef<HTMLDivElement>(null);
-  const id = useId();
+  const [wallets, setWallets] = useState<Wallet[]>([])
+  const [active, setActive] = useState<(typeof cards)[number] | boolean | null>(null)
+  const [selectedPublicKey, setSelectedPublicKey] = useState<string>('')
+  const [balance, setBalance] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const ref = useRef<HTMLDivElement>(null)
+  const id = useId()
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setActive(false);
+      if (event.key === 'Escape') {
+        setActive(false)
       }
     }
 
-    if (active && typeof active === "object") {
-      document.body.style.overflow = "hidden";
+    if (active && typeof active === 'object') {
+      document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto'
     }
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [active]);
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [active])
 
   useEffect(() => {
-    const storedWallets = localStorage.getItem("wallets");
+    const storedWallets = localStorage.getItem('wallets')
     if (storedWallets) {
       try {
-        const parsedWallets: Wallet[] = JSON.parse(storedWallets);
-        setWallets(parsedWallets);
+        const parsedWallets: Wallet[] = JSON.parse(storedWallets)
+        setWallets(parsedWallets)
         // Set the first wallet as selected by default if available
         if (parsedWallets.length > 0) {
-          setSelectedPublicKey(parsedWallets[0].solanaPublicKey);
+          setSelectedPublicKey(parsedWallets[0].solanaPublicKey)
         }
       } catch (e) {
-        console.error("Failed to parse wallets from localStorage", e);
+        console.error('Failed to parse wallets from localStorage', e)
       }
     }
-  }, []);
+  }, [])
 
   useOutsideClick(ref, () => {
-    setActive(null);
-    setBalance(null);
-    setError(null);
-  });
+    setActive(null)
+    setBalance(null)
+    setError(null)
+  })
 
   const fetchBalance = async () => {
     if (!selectedPublicKey.trim()) {
-      setError("Please select a wallet");
-      return;
+      setError('Please select a wallet')
+      return
     }
 
-    setLoading(true);
-    setError(null);
-    setBalance(null);
+    setLoading(true)
+    setError(null)
+    setBalance(null)
 
     try {
-      let apiUrl = "";
-      let responseData: any;
+      let apiUrl = ''
+      let responseData: any
 
-      if (active && typeof active === "object") {
+      if (active && typeof active === 'object') {
         switch (active.title) {
-          case "Solana (SOL)":
-            apiUrl = "https://api.devnet.solana.com";
+          case 'Solana (SOL)':
+            apiUrl = 'https://api.devnet.solana.com'
             const solanaResponse = await fetch(apiUrl, {
-              method: "POST",
+              method: 'POST',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                jsonrpc: "2.0",
+                jsonrpc: '2.0',
                 id: 1,
-                method: "getBalance",
+                method: 'getBalance',
                 params: [selectedPublicKey],
               }),
-            });
-            responseData = await solanaResponse.json();
+            })
+            responseData = await solanaResponse.json()
             setBalance(
               responseData.result?.value
-                ? (responseData.result.value / 1000000000).toFixed(4) + " SOL"
-                : "0 SOL"
-            );
-            break;
+                ? (responseData.result.value / 1000000000).toFixed(4) + ' SOL'
+                : '0 SOL'
+            )
+            break
 
-          case "Ethereum (ETH)":
+          case 'Ethereum (ETH)':
             toast.success(
-              "Right now, this feature works only with Solana. Support for this token is coming soon!"
-            );
-            break;
+              'Right now, this feature works only with Solana. Support for this token is coming soon!'
+            )
+            break
 
-          case "USD Coin (USDC)":
+          case 'USD Coin (USDC)':
             toast.success(
-              "Right now, this feature works only with Solana. Support for this token is coming soon!"
-            );
-            break;
+              'Right now, this feature works only with Solana. Support for this token is coming soon!'
+            )
+            break
 
-          case "Bitcoin (BTC)":
+          case 'Bitcoin (BTC)':
             toast.success(
-              "Right now, this feature works only with Solana. Support for this token is coming soon!"
-            );
-            break;
+              'Right now, this feature works only with Solana. Support for this token is coming soon!'
+            )
+            break
 
           default:
-            setBalance(null);
+            setBalance(null)
         }
       }
     } catch (err) {
-      setError("Failed to fetch balance. Please try again.");
-      console.error("Error fetching balance:", err);
+      setError('Failed to fetch balance. Please try again.')
+      console.error('Error fetching balance:', err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <>
       <AnimatePresence>
-        {active && typeof active === "object" && (
+        {active && typeof active === 'object' && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 backdrop-blur-sm h-full w-full z-10"
+            className="fixed inset-0 z-10 h-full w-full backdrop-blur-sm"
           />
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {active && typeof active === "object" ? (
-          <div className="fixed inset-0 grid place-items-center z-[100] mt-10">
+        {active && typeof active === 'object' ? (
+          <div className="fixed inset-0 z-[100] mt-10 grid place-items-center">
             <motion.button
               key={`button-${active.title}-${id}`}
               layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.05 } }}
-              className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-white rounded-full h-5 w-5"
+              className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-white lg:hidden"
               onClick={() => {
-                setActive(null);
-                setBalance(null);
-                setError(null);
+                setActive(null)
+                setBalance(null)
+                setError(null)
               }}
             >
               <CloseIcon />
@@ -158,7 +156,7 @@ export function ExpandableCardDemo() {
             <motion.div
               layoutId={`card-${active.title}-${id}`}
               ref={ref}
-              className="w-full max-w-[400px] h-fit md:h-fit md:max-h-[80%] flex flex-col bg-white dark:bg-neutral-900 sm:rounded-2xl overflow-hidden"
+              className="flex h-fit w-full max-w-[400px] flex-col overflow-hidden bg-white dark:bg-neutral-900 sm:rounded-2xl md:h-fit md:max-h-[80%]"
             >
               <motion.div layoutId={`image-${active.title}-${id}`}>
                 <img
@@ -166,16 +164,16 @@ export function ExpandableCardDemo() {
                   height={200}
                   src={active.src}
                   alt={active.title}
-                  className="w-full h-60 lg:h-60 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
+                  className="h-60 w-full object-cover object-top sm:rounded-tl-lg sm:rounded-tr-lg lg:h-60"
                 />
               </motion.div>
 
               <div className="p-4">
-                <div className="flex justify-between items-center mb-4">
+                <div className="mb-4 flex items-center justify-between">
                   <div>
                     <motion.h3
                       layoutId={`title-${active.title}-${id}`}
-                      className="font-bold text-sm text-neutral-700 dark:text-neutral-200"
+                      className="text-sm font-bold text-neutral-700 dark:text-neutral-200"
                     >
                       {active.title}
                     </motion.h3>
@@ -190,14 +188,14 @@ export function ExpandableCardDemo() {
 
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                    <label className="mb-1 block text-xs font-medium text-neutral-700 dark:text-neutral-300">
                       Select Account
                     </label>
                     {wallets.length > 0 ? (
                       <select
                         value={selectedPublicKey}
                         onChange={(e) => setSelectedPublicKey(e.target.value)}
-                        className="w-full px-3 py-2 text-xs border text-black border-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 dark:bg-neutral-800 dark:border-neutral-700"
+                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-xs text-black focus:outline-none focus:ring-1 focus:ring-green-500 dark:border-neutral-700 dark:bg-neutral-800"
                       >
                         {wallets.map((wallet) => (
                           <option
@@ -211,7 +209,7 @@ export function ExpandableCardDemo() {
                         ))}
                       </select>
                     ) : (
-                      <div className="text-xs text-red-500 p-2 bg-neutral-100 dark:bg-neutral-800 rounded">
+                      <div className="rounded bg-neutral-100 p-2 text-xs text-red-500 dark:bg-neutral-800">
                         No wallets found. Please add a wallet first.
                       </div>
                     )}
@@ -220,24 +218,17 @@ export function ExpandableCardDemo() {
                   <button
                     onClick={fetchBalance}
                     disabled={loading || wallets.length === 0}
-                    className="w-full px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full rounded-md bg-green-500 px-4 py-2 text-xs font-bold text-white hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {loading ? "Checking..." : "Check Balance"}
+                    {loading ? 'Checking...' : 'Check Balance'}
                   </button>
 
-                  {error && (
-                    <p className="text-xs text-red-500 dark:text-red-400">
-                      {error}
-                    </p>
-                  )}
+                  {error && <p className="text-xs text-red-500 dark:text-red-400">{error}</p>}
 
                   {balance && (
-                    <div className="mt-2 p-3 bg-neutral-100 dark:bg-neutral-800 rounded-md">
+                    <div className="mt-2 rounded-md bg-neutral-100 p-3 dark:bg-neutral-800">
                       <p className="text-xs font-medium text-neutral-800 dark:text-neutral-200">
-                        Balance:{" "}
-                        <span className="font-bold text-green-500">
-                          {balance}
-                        </span>
+                        Balance: <span className="font-bold text-green-500">{balance}</span>
                       </p>
                     </div>
                   )}
@@ -247,34 +238,34 @@ export function ExpandableCardDemo() {
           </div>
         ) : null}
       </AnimatePresence>
-      <ul className="max-w-xl mx-auto w-full gap-3">
+      <ul className="mx-auto w-full max-w-xl gap-3">
         {cards.map((card, index) => (
           <motion.div
             layoutId={`card-${card.title}-${id}`}
             key={`card-${card.title}-${id}`}
             onClick={() => setActive(card)}
-            className="p-3 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-lg cursor-pointer  border-2 border-white my-3 hover:border hover:border-black"
+            className="my-3 flex cursor-pointer flex-col items-center justify-between rounded-lg border-2 border-white p-3 hover:border hover:border-black hover:bg-neutral-50 dark:hover:bg-neutral-800 md:flex-row"
           >
-            <div className="flex gap-3 flex-col md:flex-row">
+            <div className="flex flex-col gap-3 md:flex-row">
               <motion.div layoutId={`image-${card.title}-${id}`}>
                 <img
                   width={80}
                   height={80}
                   src={card.src}
                   alt={card.title}
-                  className="h-32 w-32 md:h-12 md:w-12 rounded-md object-cover object-top"
+                  className="h-32 w-32 rounded-md object-cover object-top md:h-12 md:w-12"
                 />
               </motion.div>
               <div className="">
                 <motion.h3
                   layoutId={`title-${card.title}-${id}`}
-                  className="font-medium text-sm text-neutral-800 dark:text-neutral-200 text-center md:text-left"
+                  className="text-center text-sm font-medium text-neutral-800 dark:text-neutral-200 md:text-left"
                 >
                   {card.title}
                 </motion.h3>
                 <motion.p
                   layoutId={`description-${card.description}-${id}`}
-                  className="text-xs text-yellow-500 dark:text-neutral-400 text-center md:text-left"
+                  className="text-center text-xs text-yellow-500 dark:text-neutral-400 md:text-left"
                 >
                   {card.description}
                 </motion.p>
@@ -282,7 +273,7 @@ export function ExpandableCardDemo() {
             </div>
             <motion.button
               layoutId={`button-${card.title}-${id}`}
-              className="px-3 py-1.5 text-xs rounded-full font-bold bg-gray-100 hover:bg-green-500 hover:text-white text-black mt-3 md:mt-0"
+              className="mt-3 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-bold text-black hover:bg-green-500 hover:text-white md:mt-0"
             >
               {card.ctaText}
             </motion.button>
@@ -290,7 +281,7 @@ export function ExpandableCardDemo() {
         ))}
       </ul>
     </>
-  );
+  )
 }
 
 export const CloseIcon = () => {
@@ -314,68 +305,66 @@ export const CloseIcon = () => {
       <path d="M18 6l-12 12" />
       <path d="M6 6l12 12" />
     </motion.svg>
-  );
-};
+  )
+}
 
 const cards = [
   {
-    description: "Cryptocurrency",
-    title: "Solana (SOL)",
-    src: "/solana-sol-logo.png",
-    ctaText: "Check Balance",
-    ctaLink: "https://www.binance.com/en/trade/SOL_USDT",
+    description: 'Cryptocurrency',
+    title: 'Solana (SOL)',
+    src: '/solana-sol-logo.png',
+    ctaText: 'Check Balance',
+    ctaLink: 'https://www.binance.com/en/trade/SOL_USDT',
     content: () => {
       return (
         <p className="text-xs">
-          Solana is a high-performance blockchain supporting decentralized apps
-          and crypto-currencies.
+          Solana is a high-performance blockchain supporting decentralized apps and
+          crypto-currencies.
         </p>
-      );
+      )
     },
   },
   {
-    description: "Cryptocurrency",
-    title: "Ethereum (ETH)",
-    src: "/ethereum-eth-logo.png",
-    ctaText: "Check Balance",
-    ctaLink: "https://www.binance.com/en/trade/ETH_USDT",
+    description: 'Cryptocurrency',
+    title: 'Ethereum (ETH)',
+    src: '/ethereum-eth-logo.png',
+    ctaText: 'Check Balance',
+    ctaLink: 'https://www.binance.com/en/trade/ETH_USDT',
     content: () => {
       return (
         <p className="text-xs">
-          Ethereum is a decentralized, open-source blockchain with smart
-          contract functionality.
+          Ethereum is a decentralized, open-source blockchain with smart contract functionality.
         </p>
-      );
+      )
     },
   },
   {
-    description: "Stablecoin",
-    title: "USD Coin (USDC)",
-    src: "/usd-coin-usdc-logo.png",
-    ctaText: "Check Balance",
-    ctaLink: "https://www.binance.com/en/trade/USDC_USDT",
+    description: 'Stablecoin',
+    title: 'USD Coin (USDC)',
+    src: '/usd-coin-usdc-logo.png',
+    ctaText: 'Check Balance',
+    ctaLink: 'https://www.binance.com/en/trade/USDC_USDT',
     content: () => {
       return (
         <p className="text-xs">
-          USD Coin is a stablecoin pegged to the US dollar and regulated by
-          financial authorities.
+          USD Coin is a stablecoin pegged to the US dollar and regulated by financial authorities.
         </p>
-      );
+      )
     },
   },
   {
-    description: "Cryptocurrency",
-    title: "Bitcoin (BTC)",
-    src: "/bitcoin-btc-logo.png",
-    ctaText: "Check Balance",
-    ctaLink: "https://www.binance.com/en/trade/BTC_USDT",
+    description: 'Cryptocurrency',
+    title: 'Bitcoin (BTC)',
+    src: '/bitcoin-btc-logo.png',
+    ctaText: 'Check Balance',
+    ctaLink: 'https://www.binance.com/en/trade/BTC_USDT',
     content: () => {
       return (
         <p className="text-xs">
-          Bitcoin is the first decentralized cryptocurrency, created in 2009 by
-          an anonymous person or group.
+          Bitcoin is the first decentralized cryptocurrency, created in 2009 by an anonymous person
+          or group.
         </p>
-      );
+      )
     },
   },
-];
+]
