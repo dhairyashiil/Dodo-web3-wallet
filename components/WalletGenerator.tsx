@@ -54,7 +54,7 @@ const WalletGenerator = () => {
   const [mnemonicWords, setMnemonicWords] = useState<string[]>(
     Array(12).fill(" ")
   );
-  const [pathTypes, setPathTypes] = useState<string[]>([]);
+  // const [pathTypes, setPathTypes] = useState<string[]>([]);
   const [wallets, setWallets] = useState<CombinedWallet[]>([]);
   const [showMnemonic, setShowMnemonic] = useState<boolean>(false);
   const [mnemonicInput, setMnemonicInput] = useState<string>("");
@@ -66,17 +66,18 @@ const WalletGenerator = () => {
     "60": "Ethereum",
   };
 
-  const pathTypeName = pathTypeNames[pathTypes[0]] || "";
+  // const pathTypeName = pathTypeNames[pathTypes[0]] || "";
 
   useEffect(() => {
     const storedWallets = localStorage.getItem("wallets");
     const storedMnemonic = localStorage.getItem("mnemonics");
-    const storedPathTypes = localStorage.getItem("paths");
+    // const storedPathTypes = localStorage.getItem("paths");
 
-    if (storedWallets && storedMnemonic && storedPathTypes) {
+    // if (storedWallets && storedMnemonic && storedPathTypes) {
+    if (storedWallets && storedMnemonic) {
       setWallets(JSON.parse(storedWallets));
       setMnemonicWords(JSON.parse(storedMnemonic));
-      setPathTypes(JSON.parse(storedPathTypes));
+      // setPathTypes(JSON.parse(storedPathTypes));
       setVisiblePrivateKeys(JSON.parse(storedWallets).map(() => false));
       setVisiblePhrases(JSON.parse(storedWallets).map(() => false));
     } else {
@@ -87,20 +88,20 @@ const WalletGenerator = () => {
   const handleDeleteWallet = (index: number) => {
     // Prevent deletion if only one wallet remains
     if (wallets.length <= 1) {
-      toast.success("You must keep at least one wallet");
+      toast.success("You must keep at least one account in the wallet");
       return;
     }
 
     const updatedWallets = wallets.filter((_, i) => i !== index);
-    const updatedPathTypes = pathTypes.filter((_, i) => i !== index);
+    // const updatedPathTypes = pathTypes.filter((_, i) => i !== index);
 
     setWallets(updatedWallets);
-    setPathTypes(updatedPathTypes);
+    // setPathTypes(updatedPathTypes);
     localStorage.setItem("wallets", JSON.stringify(updatedWallets));
-    localStorage.setItem("paths", JSON.stringify(updatedPathTypes));
+    // localStorage.setItem("paths", JSON.stringify(updatedPathTypes));
     setVisiblePrivateKeys(visiblePrivateKeys.filter((_, i) => i !== index));
     setVisiblePhrases(visiblePhrases.filter((_, i) => i !== index));
-    toast.success("Wallet deleted successfully!");
+    toast.success("Account deleted successfully!");
   };
 
   const copyToClipboard = (content: string) => {
@@ -194,10 +195,10 @@ const WalletGenerator = () => {
 
       const updatedWallets = [...wallets, combinedWallet];
       // const updatedPathType = [pathTypes, pathTypes];
-      const updatedPathType = [...pathTypes, pathTypes[0]];
+      // const updatedPathType = [...pathTypes, pathTypes[0]];
       setWallets(updatedWallets);
       localStorage.setItem("wallets", JSON.stringify(updatedWallets));
-      localStorage.setItem("pathTypes", JSON.stringify(updatedPathType));
+      // localStorage.setItem("pathTypes", JSON.stringify(updatedPathType));
       setVisiblePrivateKeys([...visiblePrivateKeys, false]);
       setVisiblePhrases([...visiblePhrases, false]);
       toast.success("Wallet generated successfully!");

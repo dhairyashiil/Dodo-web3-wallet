@@ -63,7 +63,7 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
     if (confirmPhrase === seedPhrase) {
       const seedPhraseArray = seedPhrase.split(" ");
       localStorage.setItem("mnemonics", JSON.stringify(seedPhraseArray));
-      localStorage.setItem("paths", JSON.stringify(["501"])); // Default to Solana
+      // localStorage.setItem("paths", JSON.stringify(["501"])); // Default to Solana
       // onCreateWallet(seedPhrase);
       handleGenerateWallet(seedPhrase);
       toast.success("Confirmed!");
@@ -77,13 +77,10 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
     const trimmedPhrase = importPhrase.trim();
 
     if (validateMnemonic(trimmedPhrase)) {
-      // Store the imported mnemonic in localStorage (same format as create)
       const seedPhraseArray = trimmedPhrase.split(" ");
       localStorage.setItem("mnemonics", JSON.stringify(seedPhraseArray));
-      localStorage.setItem("paths", JSON.stringify(["501"])); // Default to Solana
+      // localStorage.setItem("paths", JSON.stringify(["501"])); 
 
-      // Call parent handler
-      onImportWallet(trimmedPhrase);
       handleGenerateWallet(trimmedPhrase);
 
       toast.success("Wallet imported successfully!");
@@ -92,14 +89,6 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
       toast.success("Invalid recovery phrase. Please check and try again.");
     }
   };
-
-  // const handleImportPrivateKey = () => {
-  //   if (privateKey.trim() && accountName.trim()) {
-  //     onImportPrivateKey(privateKey.trim(), accountName.trim());
-  //   } else {
-  //     toast.success("Please enter both private key and account name.");
-  //   }
-  // };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -169,13 +158,8 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
         localStorage.getItem("wallets") || "[]"
       );
 
-      // Add new wallet to array
-      // localStorage.setItem('combinedWallet', JSON.stringify(combinedWallet));
       existingWallets.push(combinedWallet);
-
-      // Save back to localStorage
       localStorage.setItem("wallets", JSON.stringify(existingWallets));
-
       toast.success("Wallet generated successfully!");
     }
   };

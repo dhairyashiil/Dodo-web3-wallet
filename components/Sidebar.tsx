@@ -40,14 +40,14 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
       ),
       active: pathname === "/home/airdrop",
     },
-    // {
-    //   label: "Send",
-    //   href: "/home/send",
-    //   icon: (
-    //     <IconArrowNarrowUp className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-    //   ),
-    //   active: pathname === "/home/send",
-    // },
+    {
+      label: "Send",
+      href: "/home/send",
+      icon: (
+        <IconArrowNarrowUp className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+      active: pathname === "/home/send",
+    },
     // {
     //   label: "Swap",
     //   href: "/home/swap",
