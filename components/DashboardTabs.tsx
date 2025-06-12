@@ -4,7 +4,7 @@ import Collectibles from "./Collectibles";
 import Token from "./Token";
 import { Tabs } from "./ui/tabs";
 
-export function TabsDemo() {
+export function DashboardTabsDemo() {
   const tabs = [
     {
       title: "Tokens",

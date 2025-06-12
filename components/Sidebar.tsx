@@ -6,12 +6,14 @@ import {
   IconArrowLeft,
   IconArrowNarrowDown,
   IconArrowNarrowUp,
+  IconArrowsDownUp,
   IconArrowsExchange,
   IconBrandTabler,
   IconFeatherFilled,
   IconRestore,
   IconSettings,
   IconUser,
+  IconRocket,
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -32,21 +34,29 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
       ),
       active: pathname === "/",
     },
+    // {
+    //   label: "Airdrop",
+    //   href: "/home/airdrop",
+    //   icon: (
+    //     <IconArrowNarrowDown className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+    //   ),
+    //   active: pathname === "/home/airdrop",
+    // },
+    // {
+    //   label: "Send",
+    //   href: "/home/send",
+    //   icon: (
+    //     <IconArrowNarrowUp className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+    //   ),
+    //   active: pathname === "/home/send",
+    // },
     {
-      label: "Airdrop",
-      href: "/home/airdrop",
+      label: "Send/Airdrop",
+      href: "/home/sendOrAirdrop",
       icon: (
-        <IconArrowNarrowDown className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+        <IconArrowsDownUp className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
-      active: pathname === "/home/airdrop",
-    },
-    {
-      label: "Send",
-      href: "/home/send",
-      icon: (
-        <IconArrowNarrowUp className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-      active: pathname === "/home/send",
+      active: pathname === "/home/sendOrAirdrop",
     },
     // {
     //   label: "Swap",
@@ -64,14 +74,14 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
       ),
       active: pathname === "/home/accounts",
     },
-    // {
-    //   label: "Settings",
-    //   href: "/home/settings",
-    //   icon: (
-    //     <IconSettings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-    //   ),
-    //   active: pathname === "/home/settings",
-    // },
+    {
+      label: "Token Launchpad",
+      href: "/home/launchpad",
+      icon: (
+        <IconRocket className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+      active: pathname === "/home/launchpad",
+    },
     {
       label: "Reset",
       href: "/home/reset",

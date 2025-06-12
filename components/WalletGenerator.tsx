@@ -60,7 +60,7 @@ const WalletGenerator = () => {
   const [mnemonicInput, setMnemonicInput] = useState<string>("");
   const [visiblePrivateKeys, setVisiblePrivateKeys] = useState<boolean[]>([]);
   const [visiblePhrases, setVisiblePhrases] = useState<boolean[]>([]);
-  const [gridView, setGridView] = useState<boolean>(false);
+  const [gridView, setGridView] = useState<boolean>(true);
   const pathTypeNames: { [key: string]: string } = {
     "501": "Solana",
     "60": "Ethereum",
@@ -215,10 +215,10 @@ const WalletGenerator = () => {
             duration: 0.3,
             ease: "easeInOut",
           }}
-          className="group flex flex-col items-center gap-4 cursor-pointer rounded-lg border border-primary/10 p-8"
+          className="group flex flex-col items-center gap-4 cursor-pointer rounded-lg border border-primary/10 p-8 bg-gradient-to-br from-purple-500 to-violet-900"
         >
           <div
-            className="flex w-full justify-between items-center"
+            className="flex w-full justify-between items-center "
             onClick={() => setShowMnemonic(!showMnemonic)}
           >
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
@@ -226,7 +226,7 @@ const WalletGenerator = () => {
             </h2>
             <Button
               onClick={() => setShowMnemonic(!showMnemonic)}
-              variant="ghost"
+              // variant="ghost"
             >
               {showMnemonic ? (
                 <ChevronUp className="size-4" />
@@ -274,15 +274,14 @@ const WalletGenerator = () => {
               Dodo Wallet
             </h2>
             <div className="flex gap-2">
-              {wallets.length > 1 && (
-                <Button
-                  variant={"ghost"}
-                  onClick={() => setGridView(!gridView)}
-                  className="hidden md:block"
-                >
-                  {gridView ? <Grid2X2 /> : <List />}
-                </Button>
-              )}
+              <Button
+                variant={"ghost"}
+                onClick={() => setGridView(!gridView)}
+                className="hidden md:block"
+              >
+                {gridView ? <List /> : <Grid2X2 />}
+              </Button>
+
               <Button onClick={() => handleAddWallet()}>Add Account</Button>
               <AlertDialog>
                 <AlertDialogContent>
@@ -324,7 +323,8 @@ const WalletGenerator = () => {
                 }}
                 className="flex flex-col rounded-2xl border border-primary/10"
               >
-                <div className="flex justify-between px-8 py-6">
+                {/* Top Section */}
+                <div className="flex justify-between px-8 py-6 bg-gradient-to-br from-purple-400 to-violet-700 rounded-t-lg">
                   <h3 className="font-bold text-2xl md:text-3xl tracking-tight ">
                     Account {index + 1}
                   </h3>

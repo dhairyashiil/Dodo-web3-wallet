@@ -191,7 +191,7 @@ export function ExpandableCardDemo() {
                 <div className="space-y-3">
                   <div>
                     <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                      Select Wallet
+                      Select Account
                     </label>
                     {wallets.length > 0 ? (
                       <select

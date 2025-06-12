@@ -1,19 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import WalletSetup from "../components/WalletSetup";
-import { useWallet } from "../hooks/useWallet";
 
 function App() {
-
-  const {
-    walletState,
-    createWallet,
-    importWallet,
-    importFromPrivateKey,
-    addNewAccount,
-    switchAccount,
-    getActiveAccount,
-  } = useWallet();
 
   useEffect(() => {
     const storedWallets = localStorage.getItem("wallets");
@@ -24,13 +13,7 @@ function App() {
     }
   }, []);
 
-  return (
-    <WalletSetup
-      onCreateWallet={createWallet}
-      onImportWallet={importWallet}
-      onImportPrivateKey={importFromPrivateKey}
-    />
-  );
+  return <WalletSetup />;
 }
 
 export default App;

@@ -24,29 +24,16 @@ interface Wallet {
   path: string;
 }
 
-interface WalletSetupProps {
-  onCreateWallet: (seedPhrase: string) => void;
-  onImportWallet: (seedPhrase: string) => void;
-  onImportPrivateKey: (privateKey: string, name: string) => void;
-}
-
-const WalletSetup: React.FC<WalletSetupProps> = ({
-  onCreateWallet,
-  onImportWallet,
-  onImportPrivateKey,
+const WalletSetup = ({
 }) => {
   const [step, setStep] = useState<
     "welcome" | "create" | "import" | "private-key" | "confirm"
   >("welcome");
   const [seedPhrase, setSeedPhrase] = useState<string>("");
   const [importPhrase, setImportPhrase] = useState("");
-  const [privateKey, setPrivateKey] = useState("");
-  const [accountName, setAccountName] = useState("");
   const [confirmPhrase, setConfirmPhrase] = useState("");
   const [showSeed, setShowSeed] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [pathTypes, setPathTypes] = useState<string[]>([]);
-  const [wallets, setWallets] = useState<Wallet[]>([]);
 
   const generateSeedPhrase = () => {
     try {
@@ -178,8 +165,8 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
   if (step === "welcome") {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-4"
-        style={{ backgroundColor: "#001a2c" }}
+        className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-300 to-violet-950"
+        // style={{ backgroundColor: "#001a2c" }}
       >
         <div className={modalContainerClasses}>
           <div className="text-center mb-8">
@@ -227,8 +214,8 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
   if (step === "create") {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-4"
-        style={{ backgroundColor: "#001a2c" }}
+        className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-300 to-violet-950"
+        // style={{ backgroundColor: "#001a2c" }}
       >
         <div className={modalContainerClasses}>
           <div className="text-center mb-6">
@@ -316,8 +303,8 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
   if (step === "confirm") {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-4"
-        style={{ backgroundColor: "#001a2c" }}
+        className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-300 to-violet-950"
+        // style={{ backgroundColor: "#001a2c" }}
       >
         <div className={modalContainerClasses}>
           <div className="text-center mb-6">
@@ -361,8 +348,8 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
   if (step === "import") {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-4"
-        style={{ backgroundColor: "#001a2c" }}
+        className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-300 to-violet-950"
+        // style={{ backgroundColor: "#001a2c" }}
       >
         <div className={modalContainerClasses}>
           <div className="text-center mb-6">
@@ -408,7 +395,7 @@ const WalletSetup: React.FC<WalletSetupProps> = ({
   // if (step === "private-key") {
   //   return (
   //     <div
-  //       className="min-h-screen flex items-center justify-center p-4"
+  //       className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-300 to-violet-950"
   //       style={{ backgroundColor: "#001a2c" }}
   //     >
   //       <div className={modalContainerClasses}>

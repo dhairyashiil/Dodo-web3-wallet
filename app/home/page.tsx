@@ -1,9 +1,9 @@
-import { TabsDemo } from "@/components/Tabs";
+import { DashboardTabsDemo } from "@/components/DashboardTabs";
 
 export default function Dashboard() {
   return (
     <div className="">
-      <TabsDemo />
+      <DashboardTabsDemo />
     </div>
   );
 }
