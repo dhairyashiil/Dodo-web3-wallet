@@ -13,7 +13,7 @@ import {
 import { useState, useEffect } from "react";
 import bs58 from "bs58";
 
-interface Wallet {
+export interface Wallet {
   mnemonic: string;
   solanaPath: string;
   solanaPrivateKey: string;
@@ -128,7 +128,7 @@ export default function SendPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-full">
+    <div className="container mx-auto p-4 max-w-xl rounded-md border border-gray-500">
       <h1 className="text-2xl font-bold mb-6">Send SOL</h1>
       
       <div className="mb-4">

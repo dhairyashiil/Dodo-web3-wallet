@@ -4,12 +4,14 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { toast } from "sonner";
+import { Wallet } from "@/app/home/send/page";
 
 export function ExpandableCardDemo() {
+  const [wallets, setWallets] = useState<Wallet[]>([]);
   const [active, setActive] = useState<(typeof cards)[number] | boolean | null>(
     null
   );
-  const [publicKey, setPublicKey] = useState("");
+  const [selectedPublicKey, setSelectedPublicKey] = useState<string>("");
   const [balance, setBalance] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +35,22 @@ export function ExpandableCardDemo() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [active]);
 
+  useEffect(() => {
+    const storedWallets = localStorage.getItem("wallets");
+    if (storedWallets) {
+      try {
+        const parsedWallets: Wallet[] = JSON.parse(storedWallets);
+        setWallets(parsedWallets);
+        // Set the first wallet as selected by default if available
+        if (parsedWallets.length > 0) {
+          setSelectedPublicKey(parsedWallets[0].solanaPublicKey);
+        }
+      } catch (e) {
+        console.error("Failed to parse wallets from localStorage", e);
+      }
+    }
+  }, []);
+
   useOutsideClick(ref, () => {
     setActive(null);
     setBalance(null);
@@ -40,8 +58,8 @@ export function ExpandableCardDemo() {
   });
 
   const fetchBalance = async () => {
-    if (!publicKey.trim()) {
-      setError("Please enter a valid public key");
+    if (!selectedPublicKey.trim()) {
+      setError("Please select a wallet");
       return;
     }
 
@@ -66,7 +84,7 @@ export function ExpandableCardDemo() {
                 jsonrpc: "2.0",
                 id: 1,
                 method: "getBalance",
-                params: [publicKey],
+                params: [selectedPublicKey],
               }),
             });
             responseData = await solanaResponse.json();
@@ -78,21 +96,21 @@ export function ExpandableCardDemo() {
             break;
 
           case "Ethereum (ETH)":
-            toast.success("Right now, this feature works only with Solana. Support for this token is coming soon!");
-            // For Ethereum, you would typically use a service like Etherscan or Infura
-            // setBalance("Ethereum balance fetching would be implemented here");
+            toast.success(
+              "Right now, this feature works only with Solana. Support for this token is coming soon!"
+            );
             break;
 
           case "USD Coin (USDC)":
-            toast.success("Right now, this feature works only with Solana. Support for this token is coming soon!");
-            // For USDC on Solana, you'd need to get token accounts
-            // setBalance("USDC balance fetching would be implemented here");
+            toast.success(
+              "Right now, this feature works only with Solana. Support for this token is coming soon!"
+            );
             break;
 
           case "Bitcoin (BTC)":
-            toast.success("Right now, this feature works only with Solana. Support for this token is coming soon!");
-            // For Bitcoin, you'd use a Bitcoin blockchain explorer API
-            // setBalance("Bitcoin balance fetching would be implemented here");
+            toast.success(
+              "Right now, this feature works only with Solana. Support for this token is coming soon!"
+            );
             break;
 
           default:
@@ -173,20 +191,35 @@ export function ExpandableCardDemo() {
                 <div className="space-y-3">
                   <div>
                     <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                      Account Public Key
+                      Select Wallet
                     </label>
-                    <input
-                      type="text"
-                      value={publicKey}
-                      onChange={(e) => setPublicKey(e.target.value)}
-                      placeholder="Enter public key"
-                      className="w-full px-3 py-2 text-xs border text-black border-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 dark:bg-neutral-800 dark:border-neutral-700"
-                    />
+                    {wallets.length > 0 ? (
+                      <select
+                        value={selectedPublicKey}
+                        onChange={(e) => setSelectedPublicKey(e.target.value)}
+                        className="w-full px-3 py-2 text-xs border text-black border-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 dark:bg-neutral-800 dark:border-neutral-700"
+                      >
+                        {wallets.map((wallet) => (
+                          <option
+                            key={wallet.solanaPublicKey}
+                            value={wallet.solanaPublicKey}
+                            className="text-xs"
+                          >
+                            {wallet.solanaPublicKey.substring(0, 6)}...
+                            {wallet.solanaPublicKey.slice(-4)}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="text-xs text-red-500 p-2 bg-neutral-100 dark:bg-neutral-800 rounded">
+                        No wallets found. Please add a wallet first.
+                      </div>
+                    )}
                   </div>
 
                   <button
                     onClick={fetchBalance}
-                    disabled={loading}
+                    disabled={loading || wallets.length === 0}
                     className="w-full px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? "Checking..." : "Check Balance"}
