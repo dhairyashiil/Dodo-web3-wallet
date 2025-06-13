@@ -5,11 +5,12 @@ import { toast } from 'sonner'
 import { IconExternalLink } from '@tabler/icons-react'
 import Link from 'next/link'
 import { Wallet } from '@/app/home/send/page'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const RPC_PROVIDERS = [
   {
     name: 'Quicknode',
-    url: 'https://newest-blue-hill.solana-devnet.quiknode.pro/', // API Key: e8d6f0a2a56ea2bcbb7b76df179a366105a10dd6
+    url: 'https://newest-blue-hill.solana-devnet.quiknode.pro/',
     requiresKey: true,
   },
   {
@@ -17,33 +18,28 @@ const RPC_PROVIDERS = [
     url: 'https://api.devnet.solana.com',
     requiresKey: false,
   },
-  // {
-  //     name: "Alchemy",
-  //     url: "https://solana-devnet.g.alchemy.com/v2/", // API Key: jfdJi0c1ziLLMc2lRF_gu5p_ByMqeY_U
-  //     requiresKey: true
-  //   },
-  // {
-  //   name: "Helius",
-  //   url: "https://devnet.helius-rpc.com/?api-key=",
-  //   requiresKey: true,
-  // },
-  // {
-  //   name: "Infura",
-  //   url: "https://solana-devnet.infura.io/v3/",
-  //   requiresKey: true,
-  // },
 ]
+
+export type WalletType = 'dodo' | 'external'
 
 export default function AirdropToken() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [publicKey, setPublicKey] = useState('')
   const [amount, setAmount] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [selectedProvider, setSelectedProvider] = useState(RPC_PROVIDERS[1]) // Default to Solana Public RPC
+  const [selectedProvider, setSelectedProvider] = useState(RPC_PROVIDERS[1])
   const [apiKey, setApiKey] = useState('')
   const [wallets, setWallets] = useState<Wallet[]>([])
   const [success, setSuccess] = useState('')
   const [signLink, setSignLink] = useState('')
+  const [walletType, setWalletType] = useState<WalletType>('dodo')
+
+  const wallet = useWallet()
+  let externalPublicKey
+  if (wallet.connected) {
+    console.log('wallet is connected')
+    externalPublicKey = wallet.publicKey
+  }
 
   useEffect(() => {
     const storedWallets = localStorage.getItem('wallets')
@@ -118,7 +114,7 @@ export default function AirdropToken() {
               value={selectedProvider.name}
               onChange={(e) => {
                 const provider = RPC_PROVIDERS.find((p) => p.name === e.target.value)
-                setSelectedProvider(provider || RPC_PROVIDERS[4])
+                setSelectedProvider(provider || RPC_PROVIDERS[1])
               }}
               className="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-purple-500"
             >
@@ -153,27 +149,78 @@ export default function AirdropToken() {
             />
           </div>
 
+          <div className="space-y-3">
+            <label className="mb-2 block text-gray-700">Wallet Type</label>
+            <div className="flex items-center space-x-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  className="h-4 w-4 text-purple-600 focus:ring-purple-500"
+                  checked={walletType === 'dodo'}
+                  onChange={() => setWalletType('dodo')}
+                />
+                <span className="ml-2">Dodo Wallet</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  className="h-4 w-4 text-purple-600 focus:ring-purple-500"
+                  checked={walletType === 'external'}
+                  onChange={() => {
+                    setWalletType('external')
+                    if (wallet.connected && wallet.publicKey) {
+                      setPublicKey(wallet.publicKey.toBase58())
+                    }
+                  }}
+                  disabled={!externalPublicKey}
+                />
+                <span className={`ml-2 ${!externalPublicKey ? 'text-gray-400' : ''}`}>
+                  {wallet?.wallet?.adapter.name || 'External'} Wallet{' '}
+                  {!externalPublicKey && '(Not connected)'}
+                </span>
+              </label>
+            </div>
+          </div>
+
           <div>
             <label className="mb-2 block text-gray-700">
               Public Key of Recipient&apos;s Account
             </label>
-            <select
-              className="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-purple-500"
-              onChange={(e) => {
-                const index = parseInt(e.target.value)
-                if (!isNaN(index) && index >= 0 && index < wallets.length) {
-                  const selectedWallet = wallets[index]
-                  setPublicKey(selectedWallet.solanaPublicKey)
-                }
-              }}
-            >
-              <option value="">Select an account</option>
-              {wallets.map((wallet, index) => (
-                <option key={index} value={index}>
-                  {wallet.solanaPublicKey}
-                </option>
-              ))}
-            </select>
+            {walletType === 'dodo' ? (
+              <select
+                className="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-purple-500"
+                onChange={(e) => {
+                  const index = parseInt(e.target.value)
+                  if (!isNaN(index) && index >= 0 && index < wallets.length) {
+                    const selectedWallet = wallets[index]
+                    setPublicKey(selectedWallet.solanaPublicKey)
+                  }
+                }}
+                value={wallets.findIndex((w) => w.solanaPublicKey === publicKey)}
+              >
+                <option value="">Select Account From Dodo Wallet</option>
+                {wallets.map((wallet, index) => (
+                  <option key={index} value={index}>
+                    {wallet.solanaPublicKey}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div>
+                {externalPublicKey ? (
+                  <input
+                    type="text"
+                    readOnly
+                    value={externalPublicKey.toBase58()}
+                    className="w-full rounded-lg border border-gray-300 bg-gray-100 p-3"
+                  />
+                ) : (
+                  <div className="rounded-lg border border-gray-300 bg-gray-100 p-3 text-gray-500">
+                    No external wallet connected
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div>
@@ -208,7 +255,7 @@ export default function AirdropToken() {
           </button>
           <button
             onClick={handleAirdrop}
-            disabled={isLoading}
+            disabled={isLoading || (walletType === 'external' && !externalPublicKey)}
             className={`rounded-lg px-4 py-2 font-medium text-white ${
               isLoading ? 'cursor-not-allowed bg-purple-400' : 'bg-purple-600 hover:bg-purple-700'
             } transition-colors`}

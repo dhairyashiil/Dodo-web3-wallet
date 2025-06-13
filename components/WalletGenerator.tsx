@@ -196,12 +196,10 @@ const WalletGenerator = () => {
           }}
           className="group flex cursor-pointer flex-col items-center gap-4 rounded-lg border border-primary/10 bg-gradient-to-br from-purple-500 to-violet-900 p-8"
         >
-          <div
-            className="flex w-full items-center justify-between"
-            onClick={() => setShowMnemonic(!showMnemonic)}
-          >
+          <div className="flex w-full" onClick={() => setShowMnemonic(!showMnemonic)}>
             <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Your Recovery Phrase</h2>
             <Button
+              className="ml-4"
               onClick={() => setShowMnemonic(!showMnemonic)}
               // variant="ghost"
             >

@@ -1,7 +1,8 @@
 'use client'
 import React, { useState } from 'react'
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'motion/react'
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { WalletDisconnectButton, WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 
 export const FloatingNav = ({
   navItems,
@@ -24,12 +25,12 @@ export const FloatingNav = ({
       let direction = current! - scrollYProgress.getPrevious()!
 
       if (scrollYProgress.get() > 0) {
-        setVisible(false)
+        setVisible(true)
       } else {
         if (direction < 0) {
           setVisible(true)
         } else {
-          setVisible(false)
+          setVisible(true)
         }
       }
     }
@@ -50,26 +51,35 @@ export const FloatingNav = ({
           duration: 0.2,
         }}
         className={cn(
-          'fixed inset-x-0 top-10 z-[5000] mx-auto flex max-w-fit items-center justify-center space-x-4 rounded-full border border-transparent bg-white py-2 pl-8 pr-2 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] dark:border-white/[0.2] dark:bg-black',
+          'fixed inset-x-0 top-10 z-[5000] mx-auto flex max-w-fit rounded-full border border-gray-300 bg-white p-2 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]',
           className
         )}
+        style={{
+          right: '2rem', // Position from the right edge
+          left: 'auto', // Override the default inset-x-0
+          margin: '0', // Remove auto margin
+        }}
       >
-        {navItems.map((navItem: any, idx: number) => (
-          <a
-            key={`link=${idx}`}
-            href={navItem.link}
-            className={cn(
-              'relative flex items-center space-x-1 text-neutral-600 hover:text-neutral-500 dark:text-neutral-50 dark:hover:text-neutral-300'
-            )}
-          >
-            <span className="block sm:hidden">{navItem.icon}</span>
-            <span className="hidden text-sm sm:block">{navItem.name}</span>
-          </a>
-        ))}
-        <button className="relative rounded-full border border-neutral-200 px-4 py-2 text-sm font-medium text-black dark:border-white/[0.2] dark:text-white">
-          <span>Login</span>
-          <span className="absolute inset-x-0 -bottom-px mx-auto h-px w-1/2 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
-        </button>
+        <div className="transition-transform duration-300 hover:scale-105">
+          <WalletMultiButton
+            style={{
+              backgroundColor: '#7021BE',
+              position: 'relative',
+              borderRadius: '9999px',
+              borderWidth: '1px',
+              borderColor: '#e5e5e5',
+              paddingLeft: '1rem',
+              paddingRight: '1rem',
+              paddingTop: '0.5rem',
+              paddingBottom: '0.5rem',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              color: '#000',
+              transition: 'all 0.3s ease',
+              cursor: 'pointer',
+            }}
+          />
+        </div>
       </motion.div>
     </AnimatePresence>
   )

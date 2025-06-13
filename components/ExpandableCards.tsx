@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useOutsideClick } from '@/hooks/use-outside-click'
 import { toast } from 'sonner'
 import { Wallet } from '@/app/home/send/page'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { WalletType } from './AirdropToken'
 
 export function ExpandableCardDemo() {
   const [wallets, setWallets] = useState<Wallet[]>([])
@@ -15,6 +17,15 @@ export function ExpandableCardDemo() {
   const [error, setError] = useState<string | null>(null)
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
+
+  const [walletType, setWalletType] = useState<WalletType>('dodo')
+
+  const wallet = useWallet()
+  let externalPublicKey
+  if (wallet.connected) {
+    console.log('wallet is connected')
+    externalPublicKey = wallet.publicKey
+  }
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -137,7 +148,7 @@ export function ExpandableCardDemo() {
       </AnimatePresence>
       <AnimatePresence>
         {active && typeof active === 'object' ? (
-          <div className="fixed inset-0 z-[100] mt-10 grid place-items-center">
+          <div className="fixed inset-0 z-[100] mt-48 grid place-items-center">
             <motion.button
               key={`button-${active.title}-${id}`}
               layout
@@ -156,7 +167,7 @@ export function ExpandableCardDemo() {
             <motion.div
               layoutId={`card-${active.title}-${id}`}
               ref={ref}
-              className="flex h-fit w-full max-w-[400px] flex-col overflow-hidden bg-white dark:bg-neutral-900 sm:rounded-2xl md:h-fit md:max-h-[80%]"
+              className="flex h-fit w-full max-w-[400px] flex-col overflow-hidden bg-white dark:bg-neutral-900 sm:rounded-2xl md:h-fit md:max-h-[800px]"
             >
               <motion.div layoutId={`image-${active.title}-${id}`}>
                 <img
@@ -187,7 +198,81 @@ export function ExpandableCardDemo() {
                 </div>
 
                 <div className="space-y-3">
-                  <div>
+                  <div className="text-sm text-neutral-700">
+                    <label className="mb-2 block text-gray-700">Wallet Type</label>
+                    <div className="flex items-center space-x-4">
+                      <label className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500"
+                          checked={walletType === 'dodo'}
+                          onChange={() => setWalletType('dodo')}
+                        />
+                        <span className="ml-2">Dodo Wallet</span>
+                      </label>
+
+                      <label className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500"
+                          checked={walletType === 'external'}
+                          onChange={() => {
+                            setWalletType('external')
+                            if (wallet.connected && wallet.publicKey) {
+                              setSelectedPublicKey(wallet.publicKey.toBase58())
+                            }
+                          }}
+                          disabled={!externalPublicKey}
+                        />
+                        <span className={`ml-2 ${!externalPublicKey ? 'text-gray-400' : ''}`}>
+                          {wallet?.wallet?.adapter.name || 'External'} Wallet{' '}
+                          {!externalPublicKey && '(Not connected)'}
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="text-sm text-neutral-700">
+                    <label className="mb-2 block text-gray-700">
+                      Public Key of Recipient&apos;s Account
+                    </label>
+                    {walletType === 'dodo' ? (
+                      <select
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-purple-500"
+                        onChange={(e) => {
+                          const index = parseInt(e.target.value)
+                          if (!isNaN(index) && index >= 0 && index < wallets.length) {
+                            const selectedWallet = wallets[index]
+                            setSelectedPublicKey(selectedWallet.solanaPublicKey)
+                          }
+                        }}
+                        value={wallets.findIndex((w) => w.solanaPublicKey === selectedPublicKey)}
+                      >
+                        <option value="">Select Account From Dodo Wallet</option>
+                        {wallets.map((wallet, index) => (
+                          <option key={index} value={index}>
+                            {wallet.solanaPublicKey}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div>
+                        {externalPublicKey ? (
+                          <input
+                            type="text"
+                            readOnly
+                            value={externalPublicKey.toBase58()}
+                            className="w-full rounded-lg border border-gray-300 bg-gray-100 p-3"
+                          />
+                        ) : (
+                          <div className="rounded-lg border border-gray-300 bg-gray-100 p-3 text-gray-500">
+                            No external wallet connected
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {/* <div>
                     <label className="mb-1 block text-xs font-medium text-neutral-700 dark:text-neutral-300">
                       Select Account
                     </label>
@@ -195,7 +280,7 @@ export function ExpandableCardDemo() {
                       <select
                         value={selectedPublicKey}
                         onChange={(e) => setSelectedPublicKey(e.target.value)}
-                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-xs text-black focus:outline-none focus:ring-1 focus:ring-green-500 dark:border-neutral-700 dark:bg-neutral-800"
+                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-xs text-neutral-700 focus:outline-none focus:ring-1 focus:ring-green-500 dark:border-neutral-700 dark:bg-neutral-800"
                       >
                         {wallets.map((wallet) => (
                           <option
@@ -213,7 +298,7 @@ export function ExpandableCardDemo() {
                         No wallets found. Please add a wallet first.
                       </div>
                     )}
-                  </div>
+                  </div> */}
 
                   <button
                     onClick={fetchBalance}
@@ -253,13 +338,13 @@ export function ExpandableCardDemo() {
                   height={80}
                   src={card.src}
                   alt={card.title}
-                  className="h-32 w-32 rounded-md object-cover object-top md:h-12 md:w-12"
+                  className="h-32 w-32 rounded-md object-cover object-top md:h-14 md:w-14"
                 />
               </motion.div>
               <div className="">
                 <motion.h3
                   layoutId={`title-${card.title}-${id}`}
-                  className="text-center text-sm font-medium text-neutral-800 dark:text-neutral-200 md:text-left"
+                  className="text-center text-lg font-medium text-neutral-800 dark:text-neutral-200 md:text-left"
                 >
                   {card.title}
                 </motion.h3>
@@ -273,7 +358,7 @@ export function ExpandableCardDemo() {
             </div>
             <motion.button
               layoutId={`button-${card.title}-${id}`}
-              className="mt-3 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-bold text-black hover:bg-green-500 hover:text-white md:mt-0"
+              className="mt-3 rounded-full bg-green-500 px-3 py-1.5 text-xs font-bold hover:bg-neutral-700 hover:text-white md:mt-0"
             >
               {card.ctaText}
             </motion.button>
@@ -299,7 +384,7 @@ export const CloseIcon = () => {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-3 w-3 text-black"
+      className="h-3 w-3 text-neutral-700"
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M18 6l-12 12" />
