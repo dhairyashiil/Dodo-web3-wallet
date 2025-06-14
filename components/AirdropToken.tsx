@@ -4,8 +4,8 @@ import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { toast } from 'sonner'
 import { IconExternalLink } from '@tabler/icons-react'
 import Link from 'next/link'
-import { Wallet } from '@/app/home/send/page'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { Wallet } from './SendToken'
 
 const RPC_PROVIDERS = [
   {

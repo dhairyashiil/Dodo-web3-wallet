@@ -4,9 +4,9 @@ import React, { useEffect, useId, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useOutsideClick } from '@/hooks/use-outside-click'
 import { toast } from 'sonner'
-import { Wallet } from '@/app/home/send/page'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletType } from './AirdropToken'
+import { Wallet } from './SendToken'
 
 export function ExpandableCardDemo() {
   const [wallets, setWallets] = useState<Wallet[]>([])

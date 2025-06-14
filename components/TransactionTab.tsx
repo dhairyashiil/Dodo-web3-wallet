@@ -1,7 +1,6 @@
 'use client'
 
 import AirdropToken from './AirdropToken'
-import Collectibles from './Collectibles'
 import SendToken from './SendToken'
 import { Tabs } from './ui/tabs'
 

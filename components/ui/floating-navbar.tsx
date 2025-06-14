@@ -63,7 +63,7 @@ export const FloatingNav = ({
         <div className="transition-transform duration-300 hover:scale-105">
           <WalletMultiButton
             style={{
-              backgroundColor: '#7021BE',
+              backgroundColor: '#FB923C',
               position: 'relative',
               borderRadius: '9999px',
               borderWidth: '1px',

@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from '@/components/themeprovider'
-import DeviceDetector from '@/components/DeviceDetector'
+import '../polyfills'
 
 const inter = Inter({
   subsets: ['latin'],
