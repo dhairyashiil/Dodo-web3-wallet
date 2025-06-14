@@ -10,7 +10,7 @@ export function TransactionTabsDemo() {
       title: 'Send',
       value: 'send',
       content: (
-        <div className="relative -mt-24 h-full w-full rounded-2xl bg-gradient-to-br from-purple-700 to-violet-900 text-white">
+        <div className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-br from-purple-700 to-violet-900 p-4 text-xl font-bold text-white md:p-6 md:text-2xl lg:p-10 lg:text-4xl">
           <div className="p-10 pb-0 text-xl font-bold md:text-4xl">
             <p>Send Token</p>
           </div>
@@ -24,7 +24,7 @@ export function TransactionTabsDemo() {
       title: 'Airdrop',
       value: 'airdrop',
       content: (
-        <div className="relative -mt-24 h-full w-full rounded-2xl bg-gradient-to-br from-purple-700 to-violet-900 text-white">
+        <div className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-br from-purple-700 to-violet-900 p-4 text-xl font-bold text-white md:p-6 md:text-2xl lg:p-10 lg:text-4xl">
           <div className="p-10 pb-0 text-xl font-bold md:text-4xl">
             <p>Airdrop Token</p>
           </div>
@@ -37,7 +37,7 @@ export function TransactionTabsDemo() {
   ]
 
   return (
-    <div className="b relative mx-auto flex h-[20rem] w-full max-w-5xl flex-col items-start justify-start [perspective:1000px] md:h-[40rem]">
+    <div className="relative mx-auto flex h-[30rem] w-full max-w-5xl flex-col items-start justify-start [perspective:1000px] sm:h-[35rem] md:h-[40rem]">
       <Tabs tabs={tabs} />
     </div>
   )

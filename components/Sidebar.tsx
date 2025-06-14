@@ -1,4 +1,3 @@
-// components/sidebar.tsx
 'use client'
 import React, { useState } from 'react'
 import { Sidebar, SidebarBody, SidebarLink } from './ui/sidebar'
@@ -50,11 +49,11 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
     // },
     {
       label: 'Send/Airdrop',
-      href: '/home/sendOrAirdrop',
+      href: '/home/send-or-airdrop',
       icon: (
         <IconArrowsDownUp className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
-      active: pathname === '/home/sendOrAirdrop',
+      active: pathname === '/home/send-or-airdrop',
     },
     // {
     //   label: "Swap",
@@ -71,10 +70,10 @@ export function SidebarDemo({ children }: { children: React.ReactNode }) {
       active: pathname === '/home/accounts',
     },
     {
-      label: 'Token Launchpad',
-      href: '/home/launchpad',
+      label: 'Token Creator',
+      href: '/home/token-creator',
       icon: <IconRocket className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
-      active: pathname === '/home/launchpad',
+      active: pathname === '/home/token-creator',
     },
     {
       label: 'Reset',

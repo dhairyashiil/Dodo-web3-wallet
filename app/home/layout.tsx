@@ -10,6 +10,7 @@ import { clusterApiUrl } from '@solana/web3.js'
 // Required styles
 import '@solana/wallet-adapter-react-ui/styles.css'
 import { useMemo } from 'react'
+import MobileDetector from '@/components/DeviceDetector'
 
 export default function HomeLayout({
   children,
@@ -22,17 +23,22 @@ export default function HomeLayout({
   return (
     <html lang="en">
       <body>
-        <DeviceDetector>
-          <ConnectionProvider endpoint={endpoint}>
-            <WalletProvider wallets={[]} autoConnect>
-              <WalletModalProvider>
-                <SidebarDemo>
-                  {children} <FloatingNavDemo />
-                </SidebarDemo>
-              </WalletModalProvider>
-            </WalletProvider>
-          </ConnectionProvider>
-        </DeviceDetector>
+        {/* <DeviceDetector> */}
+        <ConnectionProvider endpoint={endpoint}>
+          <WalletProvider wallets={[]} autoConnect>
+            <WalletModalProvider>
+              <MobileDetector>
+                {(isMobile) => (
+                  <SidebarDemo>
+                    <div className={isMobile ? 'mt-20' : ''}>{children}</div>
+                    <FloatingNavDemo />
+                  </SidebarDemo>
+                )}
+              </MobileDetector>
+            </WalletModalProvider>
+          </WalletProvider>
+        </ConnectionProvider>
+        {/* </DeviceDetector> */}
       </body>
     </html>
   )

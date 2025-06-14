@@ -1,7 +1,7 @@
 'use client'
 import { cn } from '@/lib/utils'
-import React, { useState, createContext, useContext } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import React, { useState, createContext, useContext, useEffect } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { IconMenu2, IconX } from '@tabler/icons-react'
 
 interface Links {
@@ -15,6 +15,7 @@ interface SidebarContextProps {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   animate: boolean
+  isMobile: boolean
 }
 
 const SidebarContext = createContext<SidebarContextProps | undefined>(undefined)
@@ -39,12 +40,27 @@ export const SidebarProvider = ({
   animate?: boolean
 }) => {
   const [openState, setOpenState] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+      // Auto-close sidebar on mobile when resizing to desktop
+      if (window.innerWidth >= 768 && isMobile) {
+        setOpenState(false)
+      }
+    }
+
+    checkIfMobile()
+    window.addEventListener('resize', checkIfMobile)
+    return () => window.removeEventListener('resize', checkIfMobile)
+  }, [isMobile])
 
   const open = openProp !== undefined ? openProp : openState
   const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState
 
   return (
-    <SidebarContext.Provider value={{ open, setOpen, animate: animate }}>
+    <SidebarContext.Provider value={{ open, setOpen, animate, isMobile }}>
       {children}
     </SidebarContext.Provider>
   )
@@ -82,77 +98,88 @@ export const DesktopSidebar = ({
   children,
   ...props
 }: React.ComponentProps<typeof motion.div>) => {
-  const { open, setOpen, animate } = useSidebar()
+  const { open, setOpen, animate, isMobile } = useSidebar()
+
+  if (isMobile) return null
+
   return (
-    <>
-      <motion.div
-        className={cn(
-          'hidden min-h-[100vh] w-[300px] shrink-0 bg-neutral-100 px-4 py-4 dark:bg-neutral-800 md:flex md:flex-col',
-          className
-        )}
-        animate={{
-          width: animate ? (open ? '300px' : '60px') : '300px',
-        }}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        {...props}
-      >
-        {children}
-      </motion.div>
-    </>
+    <motion.div
+      className={cn(
+        'hidden min-h-[100dvh] w-[300px] shrink-0 bg-neutral-100 px-4 py-4 dark:bg-neutral-800 md:flex md:flex-col',
+        className
+      )}
+      animate={{
+        width: animate ? (open ? '300px' : '80px') : '300px',
+      }}
+      transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      {...props}
+    >
+      {children}
+    </motion.div>
   )
 }
 
 export const MobileSidebar = ({ className, children, ...props }: React.ComponentProps<'div'>) => {
-  const { open, setOpen } = useSidebar()
+  const { open, setOpen, isMobile } = useSidebar()
+
+  // Prevent scrolling when mobile sidebar is open
+  useEffect(() => {
+    if (isMobile && open) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'auto'
+    }
+    return () => {
+      document.body.style.overflow = 'auto'
+    }
+  }, [open, isMobile])
+
   return (
-    <>
-      <div
-        className={cn(
-          'flex h-10 w-full flex-row items-center justify-between bg-neutral-100 px-4 py-4 dark:bg-neutral-800 md:hidden'
-        )}
-        {...props}
-      >
-        <div className="z-20 flex w-full justify-end">
-          <IconMenu2
-            className="text-neutral-800 dark:text-neutral-200"
-            onClick={() => setOpen(!open)}
-          />
-        </div>
-        <AnimatePresence>
-          {open && (
+    <div className={cn('w-0 md:hidden', className)} {...props}>
+      <div className="flex h-16 w-full items-center justify-between bg-neutral-100 px-4 dark:bg-neutral-800 md:hidden">
+        <button
+          className="z-20 flex w-10 items-center justify-center"
+          onClick={() => setOpen(!open)}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+        >
+          {open ? (
+            <IconX className="h-6 w-6 text-neutral-800 dark:text-neutral-200" />
+          ) : (
+            <IconMenu2 className="h-6 w-6 text-neutral-800 dark:text-neutral-200" />
+          )}
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {open && (
+          <>
             <motion.div
-              initial={{ x: '-100%', opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: '-100%', opacity: 0 }}
-              transition={{
-                duration: 0.3,
-                ease: 'easeInOut',
-              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[99] bg-black md:hidden"
+              onClick={() => setOpen(false)}
+            />
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               className={cn(
-                'fixed inset-0 z-[100] flex h-full w-full flex-col justify-between bg-white p-10 dark:bg-neutral-900',
+                'fixed inset-y-0 left-0 z-[100] flex h-[100dvh] w-3/4 max-w-sm flex-col bg-white p-6 dark:bg-neutral-900',
                 className
               )}
             >
-              <div
-                className="absolute right-10 top-10 z-50 text-neutral-800 dark:text-neutral-200"
-                onClick={() => setOpen(!open)}
-              >
-                <IconX />
-              </div>
-              {children}
+              <div className="flex-1 overflow-y-auto">{children}</div>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
   )
-}
-
-interface SidebarLinkProps {
-  link: Links
-  className?: string
-  onClick?: (e: React.MouseEvent) => void
 }
 
 export const SidebarLink = ({
@@ -165,27 +192,37 @@ export const SidebarLink = ({
   className?: string
   onClick?: (e: React.MouseEvent) => void
 }) => {
-  const { open, animate } = useSidebar()
+  const { open, animate, isMobile, setOpen } = useSidebar() // Move useSidebar to top level
 
   const handleClick = (e: React.MouseEvent) => {
     onClick?.(e)
+    // Auto-close sidebar on mobile when a link is clicked
+    if (isMobile) {
+      setOpen(false) // Now we can use setOpen directly
+    }
   }
 
   return (
     <a
       href={link.href}
       onClick={handleClick}
-      className={cn('group/sidebar flex items-center justify-start gap-2 py-2', className)}
+      className={cn(
+        'group/sidebar flex items-center justify-start gap-3 rounded-md px-3 py-3 transition-colors',
+        'hover:bg-purple-200 dark:hover:bg-neutral-700',
+        link.active ? 'bg-purple-600 dark:bg-neutral-700' : '',
+        className
+      )}
       {...props}
     >
-      {link.icon}
+      <span className="flex-shrink-0">{link.icon}</span>
 
       <motion.span
         animate={{
           display: animate ? (open ? 'inline-block' : 'none') : 'inline-block',
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="!m-0 inline-block whitespace-pre !p-0 text-sm text-neutral-700 transition duration-150 group-hover/sidebar:translate-x-1 dark:text-neutral-200"
+        transition={{ duration: 0.15 }}
+        className="!m-0 inline-block whitespace-nowrap !p-0 text-sm font-medium text-neutral-700 dark:text-neutral-200"
       >
         {link.label}
       </motion.span>

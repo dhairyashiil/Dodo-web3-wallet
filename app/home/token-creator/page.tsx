@@ -1,6 +1,6 @@
 import { LaunchpadTabsDemo } from '@/components/LaunchpadTab'
 
-export default function LaunchpadPage() {
+export default function TokenCreatorPage() {
   return (
     <div>
       <LaunchpadTabsDemo />

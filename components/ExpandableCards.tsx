@@ -50,7 +50,6 @@ export function ExpandableCardDemo() {
       try {
         const parsedWallets: Wallet[] = JSON.parse(storedWallets)
         setWallets(parsedWallets)
-        // Set the first wallet as selected by default if available
         if (parsedWallets.length > 0) {
           setSelectedPublicKey(parsedWallets[0].solanaPublicKey)
         }
@@ -148,14 +147,14 @@ export function ExpandableCardDemo() {
       </AnimatePresence>
       <AnimatePresence>
         {active && typeof active === 'object' ? (
-          <div className="fixed inset-0 z-[100] mt-48 grid place-items-center">
+          <div className="fixed inset-0 z-[100] mt-56 flex items-center justify-center p-4 sm:mt-48">
             <motion.button
               key={`button-${active.title}-${id}`}
               layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.05 } }}
-              className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-white lg:hidden"
+              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white sm:right-2 sm:top-2 sm:h-5 sm:w-5"
               onClick={() => {
                 setActive(null)
                 setBalance(null)
@@ -167,7 +166,7 @@ export function ExpandableCardDemo() {
             <motion.div
               layoutId={`card-${active.title}-${id}`}
               ref={ref}
-              className="flex h-fit w-full max-w-[400px] flex-col overflow-hidden bg-white dark:bg-neutral-900 sm:rounded-2xl md:h-fit md:max-h-[800px]"
+              className="flex h-fit w-full max-w-md flex-col overflow-hidden rounded-xl bg-white shadow-lg dark:bg-neutral-900 md:max-w-[400px]"
             >
               <motion.div layoutId={`image-${active.title}-${id}`}>
                 <img
@@ -175,32 +174,34 @@ export function ExpandableCardDemo() {
                   height={200}
                   src={active.src}
                   alt={active.title}
-                  className="h-60 w-full object-cover object-top sm:rounded-tl-lg sm:rounded-tr-lg lg:h-60"
+                  className="h-40 w-full object-cover object-top sm:h-48 md:h-60"
                 />
               </motion.div>
 
-              <div className="p-4">
+              <div className="p-4 sm:p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <div>
                     <motion.h3
                       layoutId={`title-${active.title}-${id}`}
-                      className="text-sm font-bold text-neutral-700 dark:text-neutral-200"
+                      className="text-lg font-bold text-neutral-700 dark:text-neutral-200 sm:text-xl"
                     >
                       {active.title}
                     </motion.h3>
                     <motion.p
                       layoutId={`description-${active.description}-${id}`}
-                      className="text-xs text-neutral-600 dark:text-neutral-400"
+                      className="text-sm text-neutral-600 dark:text-neutral-400"
                     >
                       {active.description}
                     </motion.p>
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="text-sm text-neutral-700">
-                    <label className="mb-2 block text-gray-700">Wallet Type</label>
-                    <div className="flex items-center space-x-4">
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Wallet Type
+                    </label>
+                    <div className="flex flex-col space-y-3 sm:flex-row sm:space-x-4 sm:space-y-0">
                       <label className="inline-flex items-center">
                         <input
                           type="radio"
@@ -233,12 +234,12 @@ export function ExpandableCardDemo() {
                   </div>
 
                   <div className="text-sm text-neutral-700">
-                    <label className="mb-2 block text-gray-700">
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
                       Public Key of Recipient&apos;s Account
                     </label>
                     {walletType === 'dodo' ? (
                       <select
-                        className="w-full rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-purple-500"
+                        className="w-full rounded-lg border border-gray-300 p-2 text-sm focus:border-transparent focus:ring-2 focus:ring-purple-500 sm:p-3"
                         onChange={(e) => {
                           const index = parseInt(e.target.value)
                           if (!isNaN(index) && index >= 0 && index < wallets.length) {
@@ -262,57 +263,30 @@ export function ExpandableCardDemo() {
                             type="text"
                             readOnly
                             value={externalPublicKey.toBase58()}
-                            className="w-full rounded-lg border border-gray-300 bg-gray-100 p-3"
+                            className="w-full rounded-lg border border-gray-300 bg-gray-100 p-2 text-sm sm:p-3"
                           />
                         ) : (
-                          <div className="rounded-lg border border-gray-300 bg-gray-100 p-3 text-gray-500">
+                          <div className="rounded-lg border border-gray-300 bg-gray-100 p-3 text-sm text-gray-500">
                             No external wallet connected
                           </div>
                         )}
                       </div>
                     )}
                   </div>
-                  {/* <div>
-                    <label className="mb-1 block text-xs font-medium text-neutral-700 dark:text-neutral-300">
-                      Select Account
-                    </label>
-                    {wallets.length > 0 ? (
-                      <select
-                        value={selectedPublicKey}
-                        onChange={(e) => setSelectedPublicKey(e.target.value)}
-                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-xs text-neutral-700 focus:outline-none focus:ring-1 focus:ring-green-500 dark:border-neutral-700 dark:bg-neutral-800"
-                      >
-                        {wallets.map((wallet) => (
-                          <option
-                            key={wallet.solanaPublicKey}
-                            value={wallet.solanaPublicKey}
-                            className="text-xs"
-                          >
-                            {wallet.solanaPublicKey.substring(0, 6)}...
-                            {wallet.solanaPublicKey.slice(-4)}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <div className="rounded bg-neutral-100 p-2 text-xs text-red-500 dark:bg-neutral-800">
-                        No wallets found. Please add a wallet first.
-                      </div>
-                    )}
-                  </div> */}
 
                   <button
                     onClick={fetchBalance}
                     disabled={loading || wallets.length === 0}
-                    className="w-full rounded-md bg-green-500 px-4 py-2 text-xs font-bold text-white hover:bg-green-600 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full rounded-md bg-green-500 px-4 py-2 text-sm font-bold text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
                   >
                     {loading ? 'Checking...' : 'Check Balance'}
                   </button>
 
-                  {error && <p className="text-xs text-red-500 dark:text-red-400">{error}</p>}
+                  {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
 
                   {balance && (
                     <div className="mt-2 rounded-md bg-neutral-100 p-3 dark:bg-neutral-800">
-                      <p className="text-xs font-medium text-neutral-800 dark:text-neutral-200">
+                      <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
                         Balance: <span className="font-bold text-green-500">{balance}</span>
                       </p>
                     </div>
@@ -323,51 +297,54 @@ export function ExpandableCardDemo() {
           </div>
         ) : null}
       </AnimatePresence>
-      <ul className="mx-auto w-full max-w-xl gap-3">
-        {cards.map((card, index) => (
-          <motion.div
-            layoutId={`card-${card.title}-${id}`}
-            key={`card-${card.title}-${id}`}
-            onClick={() => setActive(card)}
-            className="my-3 flex cursor-pointer flex-col items-center justify-between rounded-lg border-2 border-white p-3 hover:border hover:border-black hover:bg-neutral-50 dark:hover:bg-neutral-800 md:flex-row"
-          >
-            <div className="flex flex-col gap-3 md:flex-row">
-              <motion.div layoutId={`image-${card.title}-${id}`}>
+
+      <div className="mx-auto min-h-[56vh] w-full max-w-3xl px-4 sm:px-6">
+        <ul className="grid gap-3 sm:grid-cols-1">
+          {cards.map((card, index) => (
+            <motion.div
+              layoutId={`card-${card.title}-${id}`}
+              key={`card-${card.title}-${id}`}
+              onClick={() => setActive(card)}
+              className="flex h-16 cursor-pointer flex-row items-center overflow-hidden rounded-lg border-2 border-white transition-all hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+            >
+              <motion.div layoutId={`image-${card.title}-${id}`} className="h-full w-16 shrink-0">
                 <img
-                  width={80}
-                  height={80}
                   src={card.src}
                   alt={card.title}
-                  className="h-32 w-32 rounded-md object-cover object-top md:h-14 md:w-14"
+                  className="h-full w-full rounded-md object-cover object-top"
                 />
               </motion.div>
-              <div className="">
-                <motion.h3
-                  layoutId={`title-${card.title}-${id}`}
-                  className="text-center text-lg font-medium text-neutral-800 dark:text-neutral-200 md:text-left"
+              <div className="flex flex-1 items-center justify-between px-3">
+                <div className="overflow-hidden">
+                  <motion.h3
+                    layoutId={`title-${card.title}-${id}`}
+                    className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-200"
+                  >
+                    {card.title}
+                  </motion.h3>
+                  <motion.p
+                    layoutId={`description-${card.description}-${id}`}
+                    className="truncate text-xs text-yellow-500 dark:text-neutral-400"
+                  >
+                    {card.description}
+                  </motion.p>
+                </div>
+                <motion.button
+                  layoutId={`button-${card.title}-${id}`}
+                  className="ml-2 rounded-full bg-green-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-neutral-700 hover:text-white"
                 >
-                  {card.title}
-                </motion.h3>
-                <motion.p
-                  layoutId={`description-${card.description}-${id}`}
-                  className="text-center text-xs text-yellow-500 dark:text-neutral-400 md:text-left"
-                >
-                  {card.description}
-                </motion.p>
+                  {card.ctaText}
+                </motion.button>
               </div>
-            </div>
-            <motion.button
-              layoutId={`button-${card.title}-${id}`}
-              className="mt-3 rounded-full bg-green-500 px-3 py-1.5 text-xs font-bold hover:bg-neutral-700 hover:text-white md:mt-0"
-            >
-              {card.ctaText}
-            </motion.button>
-          </motion.div>
-        ))}
-      </ul>
+            </motion.div>
+          ))}
+        </ul>
+      </div>
     </>
   )
 }
+
+// CloseIcon and cards array remain the same as in your original code
 
 export const CloseIcon = () => {
   return (
