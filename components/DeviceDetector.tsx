@@ -37,7 +37,7 @@ export default function DeviceDetector({ children }: { children: React.ReactNode
         <div className="w-full max-w-xl rounded-lg border border-gray-300 bg-white p-6 text-gray-800">
           <h2 className="mb-2 text-lg font-semibold">Hey there!</h2>
           <p className="mb-3">
-            I'm currently focused on adding new features and crafting a pixel-perfect desktop
+            I am currently focused on adding new features and crafting a pixel-perfect desktop
             experience.
           </p>
           <p className="mb-5">
@@ -45,7 +45,7 @@ export default function DeviceDetector({ children }: { children: React.ReactNode
             use a<span className="font-semibold"> laptop or desktop computer</span>.
           </p>
           <p className="mb-5 text-lg font-bold">
-            Mobile phones and tablets aren’t supported at this time.
+            Mobile phones and tablets are not supported at this time.
           </p>
           <p>Thanks so much for your understanding and support 😊</p>
         </div>
